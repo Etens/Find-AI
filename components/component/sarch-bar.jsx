@@ -9,7 +9,7 @@ export default function SarchBar() {
     (<div key="1" className="flex flex-col items-center py-9">
       <div className="p-1">
         <div className="p-2 bg-white rounded-lg shadow-lg w-96">
-          <Input placeholder="Search for movies, series, and more..." type="search" />
+          <Input placeholder="Express your desires, find the perfect show...." type="search" />
         </div>
       </div>
     </div>)
