@@ -1,26 +1,10 @@
 "use client";
-import { useState } from 'react';
-import axios from 'axios';
+
 import { Input } from "@/components/ui/input";
+import { useChat } from 'ai/react';
 
 export default function SearchBar() {
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const handleSubmit = async (event) => {
-    event.preventDefault(); try {
-      const response = await axios.post('/api/chat', {
-        messages: [
-          {
-            role: "user",
-            content: searchTerm
-          }
-        ]
-      });
-      console.log(response.data);
-    } catch (error) {
-      console.error('Erreur lors de l\'envoi de la requête à OpenAI :', error);
-    }
-  }
+  const { messages, input, handleInputChange, handleSubmit } = useChat();
 
   return (
     <div key="1" className="flex flex-col items-center py-9">
@@ -29,11 +13,13 @@ export default function SearchBar() {
           <form onSubmit={handleSubmit}>
             <Input
               placeholder="Express your desires, find the perfect show...."
-              type="search"
-              value={searchTerm}
-              onChange={event => setSearchTerm(event.target.value)}
+              type="text"
+              value={input}
+              onChange={handleInputChange}
+              autoFocus
             />
             <button type="submit" style={{ display: 'none' }}>Rechercher</button>
+            {console.log(messages)}
           </form>
         </div>
       </div>

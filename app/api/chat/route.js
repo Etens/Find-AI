@@ -1,29 +1,31 @@
-// app/api/chat/route.js
+import { OpenAIStream, StreamingTextResponse } from 'ai';
+import MistralClient from '@mistralai/mistralai';
 
-import OpenAI from 'openai'
-import { OpenAIStream, StreamingTextResponse } from 'ai'
-
-const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY})
+const client = new MistralClient(process.env.MISTRAL_API_KEY || '');
 
 export async function POST(req) {
-  // Extract the `messages` from the body of the request
-  const { messages } = await req.json();
+    try {
+        const { messages } = await req.json();
+        console.log('Requête reçue avec les messages suivants :', messages);
 
-  // Request the OpenAI API for the response based on the prompt
-  const response = await openai.chat.completions.create({
-    model: 'gpt-3.5-turbo',
-    stream: true,
-    messages: messages,
-    max_tokens: 500,
-    temperature: 0.7,
-    top_p: 1,
-    frequency_penalty: 1,
-    presence_penalty: 1,
-  })
+        const response = await client.chatStream({
+            model: 'mistral-medium',
+            stream: true,
+            max_tokens: 1000,
+            messages,
+        });
 
-  // Convert the response into a friendly text-stream
-  const stream = OpenAIStream(response)
+        const stream = OpenAIStream(response);
+        console.log('Réponse obtenue du chatStream :', stream);
 
-  // Respond with the stream
-  return new StreamingTextResponse(stream)
+        return new StreamingTextResponse(stream);
+
+    } catch (error) {
+        console.error('Erreur lors de l\'appel à l\'API Mistral :', error);
+
+        return new Response(JSON.stringify({ error: "Une erreur s'est produite lors de la communication avec l'API Mistral." }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
 }
