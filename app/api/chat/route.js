@@ -25,9 +25,8 @@ export async function POST(req) {
         });
 
         const stream = OpenAIStream(response);
-        console.log('Réponse obtenue du chatStream :', stream);
-
         return new StreamingTextResponse(stream);
+        console.log('stream text response', stream);
 
     } catch (error) {
         console.error('Erreur lors de l\'appel à l\'API Mistral :', error);

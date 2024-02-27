@@ -1,27 +1,29 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import SearchBar from "../../../components/component/sarch-bar";
-import MovieCard from "../../../components/component/movie-card";
 import NavBar from "../../../components/component/nav-bar";
 
 export default function Video() {
+    const [responses, setResponses] = useState([]);
+
+    const handleSearchResults = (responseData) => {
+        setResponses(prevResponses => [...prevResponses, responseData]);
+    };
+
     return (
-        <main className="flex min-h-screen flex-col items-center justify-between pb-24">
+        <main className="flex flex-col items-center justify-between pb-24">
             <NavBar />
             <div className="px-24 flex flex-col items-center justify-center mt-20">
                 <VideoIcon className="w-20 h-20 shrink-0" />
                 <h1 className="text-3xl font-bold tracking-tight">Video Find</h1>
                 <p className="max-w-[600px] text-center text-gray-500 dark:text-gray-400 mt-4">
-                    Input your dream viewing experience to discover movies, series, documantary and animations tailored to your imagination. Try phrases like 'heartwarming true story', 'finance drama series', or 'AI documentary'!
+                    Input your dream viewing experience to discover movies, series, documentary, and animations tailored to your imagination. Try phrases like 'heartwarming true story', 'finance drama series', or 'AI documentary'!
                 </p>
-                <SearchBar />
-                <div className="grid grid-cols-1 gap-8 mt-12 sm:grid-cols-2 lg:grid-cols-3">
-                    <MovieCard title="Titanic" />
-                    <MovieCard title="Interstellar" />
-                    <MovieCard title="Avatar" />
-                    <MovieCard title="Le Roi Lion" />
-                    <MovieCard title="Forest Gump" />
-                    <MovieCard title="Le Parrain" />
-                </div>
+                <SearchBar onSearchResults={handleSearchResults} />
+                {responses.map((response, index) => (
+                    <p key={index}>{JSON.stringify(response, null, 2)}</p> // Affiche le JSON format
+                ))}
             </div>
         </main>
     );
