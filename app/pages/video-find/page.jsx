@@ -1,16 +1,11 @@
 "use client";
-
-import React, { useState } from "react";
-import SearchBar from "../../../components/component/sarch-bar";
-import NavBar from "../../../components/component/nav-bar";
+import React, { useState } from 'react';
+import SearchBar from "../../components/component/search-bar";
+import NavBar from "../../components/component/nav-bar";
+import MovieCard from '../../components/component/movie-card';
 
 export default function Video() {
-    const [responses, setResponses] = useState([]);
-
-    const handleSearchResults = (responseData) => {
-        setResponses(prevResponses => [...prevResponses, responseData]);
-    };
-
+    const [assistantContent, setAssistantContent] = useState([]);
     return (
         <main className="flex flex-col items-center justify-between pb-24">
             <NavBar />
@@ -20,10 +15,21 @@ export default function Video() {
                 <p className="max-w-[600px] text-center text-gray-500 dark:text-gray-400 mt-4">
                     Input your dream viewing experience to discover movies, series, documentary, and animations tailored to your imagination. Try phrases like 'heartwarming true story', 'finance drama series', or 'AI documentary'!
                 </p>
-                <SearchBar onSearchResults={handleSearchResults} />
-                {responses.map((response, index) => (
-                    <p key={index}>{JSON.stringify(response, null, 2)}</p> // Affiche le JSON format
-                ))}
+                <SearchBar assistantContent={assistantContent} setAssistantContent={setAssistantContent} />
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
+                    {assistantContent.map((content, index) => (
+                        <MovieCard
+                            key={index}
+                            title={content["Titre du visionnage"]}
+                            description={content["Description courte sans spoiler"]}
+                            emotion={content["Emotion"]}
+                            note={content["Réputation Web"]?.Note}
+                            explication={content["Réputation Web"]?.Explication}
+                        />
+
+                    ))}
+
+                </div>
             </div>
         </main>
     );

@@ -4,7 +4,6 @@ import MistralClient from '@mistralai/mistralai';
 const client = new MistralClient(process.env.MISTRAL_API_KEY || '');
 const aiInstructionsData = require('./instructions.json');
 
-// Créer l'objet d'instructions à envoyer
 const aiInstructionsContent = aiInstructionsData.content.join('\n');
 const aiInstructions = {
     role: 'system',
@@ -20,13 +19,12 @@ export async function POST(req) {
         const response = await client.chatStream({
             model: 'mistral-medium',
             stream: true,
-            max_tokens: 500,
+            max_tokens: 1000,
             messages,
         });
 
         const stream = OpenAIStream(response);
         return new StreamingTextResponse(stream);
-        console.log('stream text response', stream);
 
     } catch (error) {
         console.error('Erreur lors de l\'appel à l\'API Mistral :', error);
