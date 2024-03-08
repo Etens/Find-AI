@@ -9,6 +9,7 @@
     "- 'Description courte sans spoiler': Une description concise et courte du film, évitant de révéler des éléments clés de l'intrigue, adaptée à la langue du prompt.",
     "- 'Réputation Web': {'Note': 'Qualitative', 'Explication': 'Une explication concise, se concentrant sur des aspects comme le scénario, les personnages, etc., basée sur l'analyse de sentiment des réseaux sociaux et d'autres sources web.'}. Utilise uniquement les termes 'Excellent', 'Bon', 'Moyen', 'Mauvais', 'Désastreux' pour la note.",
     "- 'Emotion': L'émotion principale visée par le film, choisie parmi 'Rire', 'Émotion', 'Frisson', 'Réflexion', 'Romantisme', adaptée à la langue du prompt.",
+    "- 'Date de sortie': La date officielle de sortie du film, présentée dans un format standardisé (par exemple, 'YYYY'), adaptée à la langue du prompt.",
     "En cas de prompt inadapté, la réponse JSON doit uniquement contenir :",
     "{ 'Erreur': 'Le prompt fourni n'est pas adapté pour une recherche d'informations sur un contenu audiovisuel.'",
     "La réponse doit être strictement en JSON pour une intégration directe dans l'interface utilisateur, ajustée à la langue utilisée par l'utilisateur."

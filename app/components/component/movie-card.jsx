@@ -1,6 +1,6 @@
-import { CardTitle, CardDescription, CardHeader, Card } from "../ui/card";
+import { CardTitle, CardDescription, CardHeader, Card, CardImage } from "../ui/card";
 
-export default function MovieCard({ title, description, emotion, note, explication }) {
+export default function MovieCard({ title, description, emotion, note, explication, date, posterURL, duration, mainActors }) {
   // Utilisez cette fonction pour convertir la note en étoiles
   const getRatingFromNote = (note) => {
     const ratings = {
@@ -14,11 +14,11 @@ export default function MovieCard({ title, description, emotion, note, explicati
   };
 
   return (
-    <Card key="1" className="shadow-lg rounded-lg overflow-hidden">
+    <Card key="1" className="shadow-lg rounded-lg overflow-hidden w-80">
+      <CardImage src={posterURL} alt={title} className="w-full h-150" />
       <CardHeader className="bg-gray-100 p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <FilmIcon className="w-8 h-8 text-gray-700" />
             <CardTitle className="text-lg font-semibold" >{title}</CardTitle>
           </div>
           <div className="flex items-center">
@@ -33,36 +33,13 @@ export default function MovieCard({ title, description, emotion, note, explicati
         <p className="text-sm text-gray-500">{description}</p>
         <p className="text-sm text-gray-500 mt-5">{explication}</p>
         <p className="text-sm text-gray-500 mt-5">{emotion}</p>
+        <p className="text-sm text-gray-500 mt-5">{date}</p>
+        <p className="text-sm text-gray-500 mt-5">{duration}</p>
+        <p className="text-sm text-gray-500 mt-5">{mainActors}</p>
       </CardDescription>
     </Card>
   );
 }
-
-function FilmIcon(props) {
-  return (
-    (<svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round">
-      <rect width="18" height="18" x="3" y="3" rx="2" />
-      <path d="M7 3v18" />
-      <path d="M3 7.5h4" />
-      <path d="M3 12h18" />
-      <path d="M3 16.5h4" />
-      <path d="M17 3v18" />
-      <path d="M17 7.5h4" />
-      <path d="M17 16.5h4" />
-    </svg>)
-  );
-}
-
 
 function StarIcon(props) {
   return (

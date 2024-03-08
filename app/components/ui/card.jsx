@@ -13,6 +13,14 @@ const Card = React.forwardRef(({ className, ...props }, ref) => (
 ))
 Card.displayName = "Card"
 
+const CardImage = React.forwardRef(({ className, ...props }, ref) => (
+  <img
+    ref={ref}
+    className={cn("w-full h-64 object-cover", className)}
+    {...props} />
+))
+CardImage.displayName = "CardImage"
+
 const CardHeader = React.forwardRef(({ className, ...props }, ref) => (
   <div
     ref={ref}
@@ -50,4 +58,4 @@ const CardFooter = React.forwardRef(({ className, ...props }, ref) => (
 ))
 CardFooter.displayName = "CardFooter"
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, CardImage }

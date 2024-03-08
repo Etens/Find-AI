@@ -6,6 +6,8 @@ import MovieCard from '../../components/component/movie-card';
 
 export default function Video() {
     const [assistantContent, setAssistantContent] = useState([]);
+    const [movieDetailsMDb, setMovieDetailsMDb] = useState([]);
+
     return (
         <main className="flex flex-col items-center justify-between pb-24">
             <NavBar />
@@ -15,20 +17,27 @@ export default function Video() {
                 <p className="max-w-[600px] text-center text-gray-500 dark:text-gray-400 mt-4">
                     Input your dream viewing experience to discover movies, series, documentary, and animations tailored to your imagination. Try phrases like 'heartwarming true story', 'finance drama series', or 'AI documentary'!
                 </p>
-                <SearchBar assistantContent={assistantContent} setAssistantContent={setAssistantContent} />
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
-                    {assistantContent.map((content, index) => (
+                <SearchBar
+                    setAssistantContent={setAssistantContent}
+                    assistantContent={assistantContent}
+                    setMovieDetailsMDb={setMovieDetailsMDb}
+                    movieDetailsMDb={movieDetailsMDb}
+                />
+                <div className="grid grid-cols-3 gap-8 mt-12">
+                    {movieDetailsMDb.map((movie, index) => (
                         <MovieCard
-                            key={index}
-                            title={content["Titre du visionnage"]}
-                            description={content["Description courte sans spoiler"]}
-                            emotion={content["Emotion"]}
-                            note={content["Réputation Web"]?.Note}
-                            explication={content["Réputation Web"]?.Explication}
+                            key={movie.id || index}
+                            title={movie.title}
+                            description={movie.description}
+                            emotion={movie.emotion}
+                            note={movie.note}
+                            explication={movie.explication}
+                            posterURL={movie.posterURL}
+                            duration={movie.duration}
+                            mainActors={movie.mainActors}
+                            date={movie.releaseDate}
                         />
-
                     ))}
-
                 </div>
             </div>
         </main>
