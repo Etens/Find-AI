@@ -5,29 +5,24 @@ import axios from 'axios';
 
 export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
-  const [requestIndex, setRequestIndex] = useState(0);
   const [language, setLanguage] = useState('fr-FR');
 
   useEffect(() => {
     if (!isLoading && messages.length > 0) {
-      console.log("🔄 Nouvelle requête détectée.");
-      setRequestIndex(prevIndex => prevIndex + 1);
 
       const filteredAndParsedMessages = messages.filter(message => message.role === 'assistant').map(assistantMessage => {
         try {
           return JSON.parse(assistantMessage.content);
         } catch (error) {
-          console.error('❗ Erreur lors du parsing du contenu du message de l\'assistant:', error);
+          console.error('Erreur lors du parsing du contenu du message de l\'assistant:', error);
           return null;
         }
       }).filter(content => content !== null);
 
       setAssistantContent(filteredAndParsedMessages);
-      console.log("📬 Messages transformés en JSON:", filteredAndParsedMessages);
 
       filteredAndParsedMessages.forEach(async (message) => {
         try {
-          console.log("🔍 Recherche des détails du film pour:", message["Titre du visionnage"]);
           const response = await axios.get(`https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(message["Titre du visionnage"])}&language=${language}`, {
             headers: {
               Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
@@ -36,7 +31,6 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
 
           const movieDetails = response.data.results.find(movie => movie.release_date.startsWith(message["Date de sortie"]));
           if (movieDetails) {
-            console.log("📝 Détails du film trouvés, récupération des informations supplémentaires...");
             const movieDetailsResponse = await axios.get(`https://api.themoviedb.org/3/movie/${movieDetails.id}?language=${language}&append_to_response=credits`, {
               headers: {
                 Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
@@ -63,12 +57,12 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
             };
 
             setMovieDetailsMDb(prevMovies => [...prevMovies.filter(movie => movie.id !== id), newMovieDetails]);
-            console.log("🎬 Nouveaux détails du film ajoutés:", newMovieDetails);
+            console.log("Détails du film récupérés:", newMovieDetails);
           } else {
-            console.log("❌ Aucun film trouvé correspondant au critère.");
+            console.log("Aucun film trouvé correspondant au critère.");
           }
         } catch (error) {
-          console.error("🚨 Erreur lors de la récupération des détails du film:", error);
+          console.error("Erreur lors de la récupération des détails du film:", error);
         }
       });
     }
@@ -80,7 +74,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
   };
 
   const loadingAnimation = (
-    <div className="flex justify-center items-center space-x-2">
+    <div className="flex justify-center items-center space-x-2 text-sm text-gray-500 mt-4">
       <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-black-500"></div>
       <div className="text-white-500">Chargement...</div>
     </div>

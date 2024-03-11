@@ -2,7 +2,7 @@ import { OpenAIStream, StreamingTextResponse } from 'ai';
 import MistralClient from '@mistralai/mistralai';
 const aiInstructionsData = require('./instructions.json');
 
-const client = new MistralClient(process.env.NEXT_PUBLIC_MISTRAL_API_KEY || '');
+const client = new MistralClient(process.env.MISTRAL_API_KEY);
 
 const aiInstructionsContent = aiInstructionsData.content.join('\n');
 const aiInstructions = {

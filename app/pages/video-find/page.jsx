@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import SearchBar from "../../components/component/search-bar";
 import NavBar from "../../components/component/nav-bar";
-import MovieCard from '../../components/component/movie-card';
+import MovieCard from  '../../components/component/movie-card';
 
 export default function Video() {
     const [assistantContent, setAssistantContent] = useState([]);
@@ -13,7 +13,7 @@ export default function Video() {
             <NavBar />
             <div className="px-24 flex flex-col items-center justify-center mt-20">
                 <VideoIcon className="w-20 h-20 shrink-0" />
-                <h1 className="text-3xl font-bold tracking-tight">Video Find</h1>
+                <h1 className="text-3xl font-bold tracking-tight text-gray-200">Video Find</h1>
                 <p className="max-w-[600px] text-center text-gray-500 dark:text-gray-400 mt-4">
                     Input your dream viewing experience to discover movies, series, documentary, and animations tailored to your imagination. Try phrases like 'heartwarming true story', 'finance drama series', or 'AI documentary'!
                 </p>
@@ -23,7 +23,7 @@ export default function Video() {
                     setMovieDetailsMDb={setMovieDetailsMDb}
                     movieDetailsMDb={movieDetailsMDb}
                 />
-                <div className="grid grid-cols-3 gap-8 mt-12">
+                <div className="grid grid-cols-1 gap-8 mt-12">
                     {movieDetailsMDb.map((movie, index) => (
                         <MovieCard
                             key={movie.id || index}
