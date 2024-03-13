@@ -2,48 +2,97 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStar as fasStar } from '@fortawesome/free-solid-svg-icons';
+import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
+import { HoverStar, HoverStarContent, HoverStarTrigger } from "../ui/hover-stars";
 
-const MovieCard = ({ id, title, date, director, duration, emotion, description, posterURL, mainActors, explication, note }) => {
+const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
+  let stars = [];
+  let rating;
+
+  switch (note) {
+    case 'Excellent': rating = 5; break;
+    case 'Bon': rating = 4; break;
+    case 'Moyen': rating = 3; break;
+    case 'Mauvais': rating = 2; break;
+    case 'Désastreux': rating = 1; break;
+    default: rating = 0;
+  }
+
+  for (let i = 0; i < 5; i++) {
+    stars.push(
+      <HoverStar key={`hover-${i}`} delay={100} openOnHover>
+        <HoverStarTrigger>
+          {i < rating ?
+            <FontAwesomeIcon icon={fasStar} size="xs" /> :
+            <FontAwesomeIcon icon={farStar} size="xs" />}
+        </HoverStarTrigger>
+        <HoverStarContent side="left" align="center">
+          <div
+            className="text-xs text-gray-200 rounded-lg p-2 bg-black bg-opacity-80 p-4"
+            style={
+              isColorLoaded ?
+                { boxShadow: `0 0px 30px -15px ${dominantColor}`, color: 'white' } :
+                { boxShadow: 'none', color: 'white' }
+            }
+          >
+            {explication}
+          </div>
+        </HoverStarContent>
+      </HoverStar>
+    );
+  }
+
+  return stars;
+};
+
+const MovieCard = ({ id, title, date, duration, emotion, description, posterURL, mainActors, explication, note, backdropURL }) => {
   const [dominantColor, setDominantColor] = useState('#ffffff');
-  const [isColorLoaded, setIsColorLoaded] = useState(false); 
+  const [isColorLoaded, setIsColorLoaded] = useState(false);
+
+  console.log('posterURL:', posterURL);
+  console.log('backdropURL:', backdropURL);
 
   useEffect(() => {
-    if (posterURL) {
-      axios.get(`/api/color?imageUrl=${encodeURIComponent(posterURL)}`)
-      .then((response) => {
+    if (backdropURL) {
+      axios.get(`/api/color?imageUrl=${encodeURIComponent(backdropURL)}`)
+        .then((response) => {
           setDominantColor(response.data.dominantColor || '#ffffff');
-          setIsColorLoaded(true); 
+          setIsColorLoaded(true);
         })
         .catch((error) => {
           console.error("Erreur lors de l'extraction de la couleur:", error);
-          setIsColorLoaded(true); 
+          setIsColorLoaded(true);
         });
     }
-  }, [posterURL]);
+  }, [backdropURL]);
 
   const haloStyle = isColorLoaded ? {
     boxShadow: `0 0px 30px -15px ${dominantColor}`,
   } : {};
 
   return (
-    <div className={`relative overflow-hidden rounded-lg shadow-lg transition duration-300 ease-in-out bg-black ${id}`} style={haloStyle}>
+    <div className={`relative overflow-hidden rounded-lg w-full shadow-lg bg-black ${id}`} style={haloStyle}>
       <div className="relative z-10 p-4 flex">
-        <img className="w-24 h-36 rounded shadow-lg" src={posterURL} alt={title} />
+        <div className="flex flex-col items-center justify-center">
+          <img className="w-24 h-36 rounded shadow-lg" src={posterURL} alt={title} />
+          <div className="flex items-center justify-center mt-2">
+            {getRatingStars(note, explication, dominantColor, isColorLoaded)}
+          </div>
+        </div>
         <div className="ml-4 text-white">
           <h1 className="text-2xl text-gray-200 font-bold">{title}</h1>
-          <h4 className="text-lg text-gray-300">{date}, {director}</h4>
-          <span className="text-sm text-gray-400">{duration}</span>
-          <p className="text-sm text-gray-400">{emotion} {note}</p>
+          <h4 className="text-lg text-gray-300">{date} {emotion} {duration}</h4>
           <p className="mt-4 text-xs text-gray-400">{mainActors}</p>
-          <p className="mt-4 text-gray-200 text-xs leading-relaxed sm:text-sm">{description}</p>
-          <p className="mt-4 text-xs text-gray-400 max-w-3xl">{explication}</p>
+          <p className="mt-4 text-gray-200 text-xs leading-relaxed max-w-lg">{description}</p>
         </div>
       </div>
-      <div className="absolute top-0 right-0 bottom-0 w-7/12 h-full bg-cover bg-no-repeat" style={{ backgroundImage: `url(${posterURL})` }}>
+      <div className="absolute top-0 right-0 bottom-0 w-7/12 h-full bg-cover bg-no-repeat bg-center" style={{ backgroundImage: `url(${backdropURL})` }}>
         <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent mix-blend-multiply backdrop-filter backdrop-blur-sm"></div>
       </div>
     </div>
   );
-};
+}
 
 export default MovieCard;

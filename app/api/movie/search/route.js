@@ -2,6 +2,7 @@ export async function GET(req) {
   try {
     const query = req.nextUrl.searchParams.get('query');
     const language = req.nextUrl.searchParams.get('language') || 'fr-FR'; // Fournit une valeur par défaut si non spécifié
+    console.log("Requete:", req.nextUrl.searchParams);
 
     console.log("Recherche des films correspondant à la requête:", query);
     console.log("Langue de la recherche:", language);

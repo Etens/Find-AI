@@ -11,7 +11,7 @@ export default function Video() {
     return (
         <main className="flex flex-col items-center justify-between pb-24">
             <NavBar />
-            <div className="px-24 flex flex-col items-center justify-center mt-20">
+            <div className="px-24 flex flex-col items-center justify-center mt-20 w-9/12">
                 <VideoIcon className="w-20 h-20 shrink-0" />
                 <h1 className="text-3xl font-bold tracking-tight text-gray-200">Video Find</h1>
                 <p className="max-w-[600px] text-center text-gray-500 dark:text-gray-400 mt-4">
@@ -23,7 +23,7 @@ export default function Video() {
                     setMovieDetailsMDb={setMovieDetailsMDb}
                     movieDetailsMDb={movieDetailsMDb}
                 />
-                <div className="grid grid-cols-1 gap-8 mt-12">
+                <div className="grid grid-cols-1 gap-8 mt-12 w-full">
                     {movieDetailsMDb.slice().reverse().map((movie, index) => (
                         <MovieCard
                             key={movie.id || index}
@@ -33,6 +33,7 @@ export default function Video() {
                             note={movie.note}
                             explication={movie.explication}
                             posterURL={movie.posterURL}
+                            backdropURL={movie.backdropURL}
                             duration={movie.duration}
                             mainActors={movie.mainActors}
                             date={movie.releaseDate}

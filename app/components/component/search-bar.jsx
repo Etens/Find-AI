@@ -6,6 +6,7 @@ import axios from 'axios';
 export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
   const [language, setLanguage] = useState('fr-FR');
+  const [movieOtherPosters, setMovieOtherPosters] = useState('');
 
   useEffect(() => {
     if (!isLoading && messages.length > 0) {
@@ -30,6 +31,8 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
 
             if (movieDetails.id) {
               const movieDetailsResponse = await axios.get(`/api/movie/details?id=${movieDetails.id}&language=${language}`);
+              const movieImagesResponse = await axios.get(`/api/movie/posters?id=${movieDetails.id}`); 
+              const movieImages = movieImagesResponse.data;
               const { poster_path, runtime } = movieDetailsResponse.data;
               const posterURL = `https://image.tmdb.org/t/p/original${poster_path}`;
               const duration = runtime ? `${Math.floor(runtime / 60)}h ${runtime % 60}min` : "Durée inconnue";
@@ -39,6 +42,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
               const newMovieDetails = {
                 id,
                 posterURL,
+                backdropURL: movieImages.backdropUrl,
                 releaseDate: message["Date de sortie"],
                 title: message["Titre du visionnage"],
                 description: message["Description courte sans spoiler"],
@@ -50,6 +54,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
               };
 
               setMovieDetailsMDb(prevMovies => [...prevMovies.filter(movie => movie.id !== id), newMovieDetails]);
+
               console.log("Détails du film récupérés:", newMovieDetails);
             }
           } else {
