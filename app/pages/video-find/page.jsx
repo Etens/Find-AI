@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import SearchBar from "../../components/component/search-bar";
 import NavBar from "../../components/component/nav-bar";
-import MovieCard from  '../../components/component/movie-card';
+import MovieCard from '../../components/component/movie-card';
 
 export default function Video() {
     const [assistantContent, setAssistantContent] = useState([]);
@@ -24,7 +24,7 @@ export default function Video() {
                     movieDetailsMDb={movieDetailsMDb}
                 />
                 <div className="grid grid-cols-1 gap-8 mt-12">
-                    {movieDetailsMDb.map((movie, index) => (
+                    {movieDetailsMDb.slice().reverse().map((movie, index) => (
                         <MovieCard
                             key={movie.id || index}
                             title={movie.title}

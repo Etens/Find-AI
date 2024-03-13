@@ -23,41 +23,35 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
 
       filteredAndParsedMessages.forEach(async (message) => {
         try {
-          const response = await axios.get(`https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(message["Titre du visionnage"])}&language=${language}`, {
-            headers: {
-              Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
+          const response = await axios.get(`/api/movie/search?query=${encodeURIComponent(message["Titre du visionnage"])}&language=${language}`);
+
+          if (response.data.results.length > 0) {
+            const movieDetails = response.data.results.find(movie => movie.release_date.startsWith(message["Date de sortie"]));
+
+            if (movieDetails.id) {
+              const movieDetailsResponse = await axios.get(`/api/movie/details?id=${movieDetails.id}&language=${language}`);
+              const { poster_path, runtime } = movieDetailsResponse.data;
+              const posterURL = `https://image.tmdb.org/t/p/original${poster_path}`;
+              const duration = runtime ? `${Math.floor(runtime / 60)}h ${runtime % 60}min` : "Durée inconnue";
+              const mainActors = movieDetailsResponse.data.credits.cast.slice(0, 5).map(actor => actor.name).join(", ");
+              const id = movieDetailsResponse.data.id;
+
+              const newMovieDetails = {
+                id,
+                posterURL,
+                releaseDate: message["Date de sortie"],
+                title: message["Titre du visionnage"],
+                description: message["Description courte sans spoiler"],
+                emotion: message["Emotion"],
+                note: message["Réputation Web"]?.Note,
+                explication: message["Réputation Web"]?.Explication,
+                duration,
+                mainActors
+              };
+
+              setMovieDetailsMDb(prevMovies => [...prevMovies.filter(movie => movie.id !== id), newMovieDetails]);
+              console.log("Détails du film récupérés:", newMovieDetails);
             }
-          });
-
-          const movieDetails = response.data.results.find(movie => movie.release_date.startsWith(message["Date de sortie"]));
-          if (movieDetails) {
-            const movieDetailsResponse = await axios.get(`https://api.themoviedb.org/3/movie/${movieDetails.id}?language=${language}&append_to_response=credits`, {
-              headers: {
-                Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
-              }
-            });
-
-            const { poster_path, runtime } = movieDetailsResponse.data;
-            const posterURL = `https://image.tmdb.org/t/p/original${poster_path}`;
-            const duration = runtime ? `${Math.floor(runtime / 60)}h ${runtime % 60}min` : "Durée inconnue";
-            const mainActors = movieDetailsResponse.data.credits.cast.slice(0, 5).map(actor => actor.name).join(", ");
-            const id = movieDetailsResponse.data.id;
-
-            const newMovieDetails = {
-              id,
-              posterURL,
-              releaseDate: message["Date de sortie"],
-              title: message["Titre du visionnage"],
-              description: message["Description courte sans spoiler"],
-              emotion: message["Emotion"],
-              note: message["Réputation Web"]?.Note,
-              explication: message["Réputation Web"]?.Explication,
-              duration,
-              mainActors
-            };
-
-            setMovieDetailsMDb(prevMovies => [...prevMovies.filter(movie => movie.id !== id), newMovieDetails]);
-            console.log("Détails du film récupérés:", newMovieDetails);
           } else {
             console.log("Aucun film trouvé correspondant au critère.");
           }

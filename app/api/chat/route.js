@@ -20,6 +20,7 @@ export async function POST(req) {
             model: 'mistral-medium',
             stream: true,
             max_tokens: 1000,
+            topP: 1,
             messages,
         });
         console.log('Response from Mistral:', response);
