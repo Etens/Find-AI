@@ -5,22 +5,25 @@ import axios from 'axios';
 
 const MovieCard = ({ id, title, date, director, duration, emotion, description, posterURL, mainActors, explication, note }) => {
   const [dominantColor, setDominantColor] = useState('#ffffff');
+  const [isColorLoaded, setIsColorLoaded] = useState(false); 
 
   useEffect(() => {
     if (posterURL) {
-      axios.get(`/api/color?imageUrl=https://picfiles.alphacoders.com/363/thumb-1920-363621.jpg`)
-        .then((response) => {
+      axios.get(`/api/color?imageUrl=${encodeURIComponent(posterURL)}`)
+      .then((response) => {
           setDominantColor(response.data.dominantColor || '#ffffff');
+          setIsColorLoaded(true); 
         })
         .catch((error) => {
           console.error("Erreur lors de l'extraction de la couleur:", error);
+          setIsColorLoaded(true); 
         });
     }
   }, [posterURL]);
 
-  const haloStyle = {
-    boxShadow: `0 0px 80px -30px ${dominantColor}`,
-  };
+  const haloStyle = isColorLoaded ? {
+    boxShadow: `0 0px 30px -15px ${dominantColor}`,
+  } : {};
 
   return (
     <div className={`relative overflow-hidden rounded-lg shadow-lg transition duration-300 ease-in-out bg-black ${id}`} style={haloStyle}>
