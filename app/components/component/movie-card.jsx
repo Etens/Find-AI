@@ -55,7 +55,7 @@ const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
             <FontAwesomeIcon icon={fasStar} size="xs" /> :
             <FontAwesomeIcon icon={farStar} size="xs" />}
         </HoverStarTrigger>
-        <HoverStarContent side="left" align="center">
+        <HoverStarContent side="top" align="center">
           <div
             className="text-xs text-gray-200 rounded-lg p-2 bg-black bg-opacity-90 p-4 z-30"
             style={
@@ -77,6 +77,7 @@ const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
 const MovieCard = ({ id, title, date, duration, emotion, description, posterURL, mainActors, explication, note, backdropURL }) => {
   const [dominantColor, setDominantColor] = useState('#ffffff');
   const [isColorLoaded, setIsColorLoaded] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   console.log('posterURL:', posterURL);
   console.log('backdropURL:', backdropURL);
@@ -95,12 +96,16 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
     }
   }, [backdropURL]);
 
-  const haloStyle = isColorLoaded ? {
-    boxShadow: `0 0px 30px -15px ${dominantColor}`,
-  } : {};
+  const boxShadowColor = isHovered && isColorLoaded ? dominantColor : '#ffffff';
+  const boxShadowStyle = { boxShadow: `0 0px 30px -15px ${boxShadowColor}` };
 
   return (
-    <div className={`relative overflow-hidden rounded-lg w-full shadow-lg bg-black ${id}`} style={haloStyle}>
+    <div
+      className={`relative overflow-hidden rounded-lg w-full shadow-lg bg-black ${id}`}
+      style={boxShadowStyle}
+      onMouseEnter={() => setIsHovered(true)} 
+      onMouseLeave={() => setIsHovered(false)} 
+    >
       <div className="relative z-10 p-4 flex">
         <div className="flex flex-col items-center justify-center">
           <img className="w-24 h-36 rounded shadow-lg" src={posterURL} alt={title} />
@@ -108,7 +113,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
             <HoverStarTrigger>
               <FontAwesomeIcon icon={getEmotionIcon(emotion)} size="xs" className='mt-2' />
             </HoverStarTrigger>
-            <HoverStarContent side="left" align="center">
+            <HoverStarContent side="top" align="center">
               <div
                 className="text-xs text-gray-200 rounded-lg p-2 bg-black bg-opacity-90 p-4"
                 style={
