@@ -3,26 +3,35 @@ import React, { useState } from 'react';
 import SearchBar from "../../components/component/search-bar";
 import NavBar from "../../components/component/nav-bar";
 import MovieCard from '../../components/component/movie-card';
+import { Spotlight } from "../../components/ui/spotlight";
 
 export default function Video() {
     const [assistantContent, setAssistantContent] = useState([]);
     const [movieDetailsMDb, setMovieDetailsMDb] = useState([]);
 
     return (
-        <main className="flex flex-col items-center justify-between pb-24">
+        <main className="flex flex-col items-center justify-center w-full h-full">
+            <Spotlight
+                className="-top-40 left-0 md:left-60 md:-top-20"
+                fill="white"
+            />
             <NavBar />
-            <div className="px-24 flex flex-col items-center justify-center mt-20 w-9/12">
-                <VideoIcon className="w-20 h-20 shrink-0" />
-                <h1 className="text-3xl font-bold tracking-tight text-gray-200">Video Find</h1>
-                <p className="max-w-[600px] text-center text-gray-500 dark:text-gray-400 mt-4">
-                    Input your dream viewing experience to discover movies, series, documentary, and animations tailored to your imagination. Try phrases like 'heartwarming true story', 'finance drama series', or 'AI documentary'!
-                </p>
-                <SearchBar
-                    setAssistantContent={setAssistantContent}
-                    assistantContent={assistantContent}
-                    setMovieDetailsMDb={setMovieDetailsMDb}
-                    movieDetailsMDb={movieDetailsMDb}
-                />
+            <div className="flex flex-col h-[40rem] w-full rounded-md flex md:items-center md:justify-center bg-black/[0.96] antialiased bg-grid-white/[0.02] relative overflow-hidden ">
+                <div className=" p-4 max-w-7xl  mx-auto relative z-10  w-full pt-20 md:pt-0">
+                    <h1 className="text-4xl md:text-7xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 bg-opacity-50">
+                        Find <br /> imaginez trouvez regardez
+                    </h1>
+                    <p className="mt-4 font-normal text-base text-neutral-300 max-w-lg text-center mx-auto">
+                    Vos idées deviennent des découvertes instantanées. Décrit par votre imagination, notre IA sélectionne le film ou la série parfaite en un instant. 
+                    Finies les recherches sans fin, votre prochaine aventure vidéo n'attend que votre vision.               
+                    </p>
+                    <SearchBar
+                        setAssistantContent={setAssistantContent}
+                        assistantContent={assistantContent}
+                        setMovieDetailsMDb={setMovieDetailsMDb}
+                        movieDetailsMDb={movieDetailsMDb}
+                    />
+                </div>
                 <div className="grid grid-cols-1 gap-8 mt-12 w-full">
                     {movieDetailsMDb.slice().reverse().map((movie, index) => (
                         <MovieCard
@@ -41,7 +50,7 @@ export default function Video() {
                     ))}
                 </div>
             </div>
-        </main>
+        </main >
     );
 }
 

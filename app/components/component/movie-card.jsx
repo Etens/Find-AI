@@ -3,9 +3,36 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar as fasStar } from '@fortawesome/free-solid-svg-icons';
+import {
+  faStar as fasStar,
+  faSmile,
+  faFaceGrinTears,
+  faFaceSadTear,
+  faFaceFlushed,
+  faPeoplePulling,
+  faFaceGrinHearts,
+  faBrain,
+  faHeartPulse,
+  faGrinStars,
+  faFire,
+} from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import { HoverStar, HoverStarContent, HoverStarTrigger } from "../ui/hover-stars";
+
+const getEmotionIcon = (emotion) => {
+  const emotionIcons = {
+    Rire: faFaceGrinTears,
+    Tristesse: faFaceSadTear,
+    Peur: faFaceFlushed,
+    Motivation: faPeoplePulling,
+    Amour: faFaceGrinHearts,
+    Réflexion: faBrain,
+    Adrénaline: faHeartPulse,
+    Émerveillement: faGrinStars,
+    Frisson: faFire
+  };
+  return emotionIcons[emotion] || faSmile;
+};
 
 const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
   let stars = [];
@@ -30,7 +57,7 @@ const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
         </HoverStarTrigger>
         <HoverStarContent side="left" align="center">
           <div
-            className="text-xs text-gray-200 rounded-lg p-2 bg-black bg-opacity-80 p-4"
+            className="text-xs text-gray-200 rounded-lg p-2 bg-black bg-opacity-90 p-4 z-30"
             style={
               isColorLoaded ?
                 { boxShadow: `0 0px 30px -15px ${dominantColor}`, color: 'white' } :
@@ -77,13 +104,30 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
       <div className="relative z-10 p-4 flex">
         <div className="flex flex-col items-center justify-center">
           <img className="w-24 h-36 rounded shadow-lg" src={posterURL} alt={title} />
-          <div className="flex items-center justify-center mt-2">
+          <HoverStar className="mt-2">
+            <HoverStarTrigger>
+              <FontAwesomeIcon icon={getEmotionIcon(emotion)} size="xs" className='mt-2' />
+            </HoverStarTrigger>
+            <HoverStarContent side="left" align="center">
+              <div
+                className="text-xs text-gray-200 rounded-lg p-2 bg-black bg-opacity-90 p-4"
+                style={
+                  isColorLoaded ?
+                    { boxShadow: `0 0px 30px -15px ${dominantColor}`, color: 'white' } :
+                    { boxShadow: 'none', color: 'white' }
+                }
+              >
+                {emotion}
+              </div>
+            </HoverStarContent>
+          </HoverStar>
+          <div className="text-gray-300 text-xs flex space-x-1">
             {getRatingStars(note, explication, dominantColor, isColorLoaded)}
           </div>
         </div>
         <div className="ml-4 text-white">
           <h1 className="text-2xl text-gray-200 font-bold">{title}</h1>
-          <h4 className="text-lg text-gray-300">{date} {emotion} {duration}</h4>
+          <h4 className="text-base text-gray-300 mt-2">{date} - {duration}</h4>
           <p className="mt-4 text-xs text-gray-400">{mainActors}</p>
           <p className="mt-4 text-gray-200 text-xs leading-relaxed max-w-lg">{description}</p>
         </div>
@@ -94,5 +138,4 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
     </div>
   );
 }
-
 export default MovieCard;

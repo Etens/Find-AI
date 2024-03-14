@@ -5,11 +5,6 @@ export default function NavBar() {
     (<header
       key="1"
       className="flex items-center h-14 w-full bg-black-100 flex justify-between  shadow-lg">
-      <Link 
-        href="/"
-        className="flex items-center text-2xl font-bold text-white-500 hover:underline">
-          <span className="ml-2">Find</span>
-      </Link>
       <div className="flex gap-4 md:gap-8 md:mx-6 lg:gap-10 lg:mx-10 xl:gap-12 xl:mx-12">
         <Link
           className="flex items-center text-sm font-medium hover:underline"
