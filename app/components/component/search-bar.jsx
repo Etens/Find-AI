@@ -4,10 +4,38 @@ import { useChat } from 'ai/react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
+import { Progress } from "../../components/ui/progress";
 
 export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
   const [language, setLanguage] = useState('fr-FR');
+  const [progressValue, setProgressValue] = useState(0);
+
+  useEffect(() => {
+    let intervalId;
+
+    if (isLoading) {
+      setProgressValue(1);
+      intervalId = setInterval(() => {
+        setProgressValue((oldValue) => {
+          const randomChoice = Math.random();
+          let randomIncrease;
+          if (randomChoice < 0.8) {
+            randomIncrease = Math.floor(Math.random() * (15 - 5 + 1)) + 5;
+          } else {
+            randomIncrease = Math.floor(Math.random() * (25 - 16 + 1)) + 16;
+          }
+          const newValue = oldValue + randomIncrease;
+          return newValue > 90 ? 90 : newValue;
+        });
+      }, 1700);
+    } else {
+      setProgressValue(100);
+      setTimeout(() => setProgressValue(0), 1000);
+    }
+
+    return () => clearInterval(intervalId);
+  }, [isLoading]);
 
   useEffect(() => {
     if (!isLoading && messages.length > 0) {
@@ -77,13 +105,6 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
     handleInputChange({ target: { value: '' } });
   };
 
-  const loadingAnimation = (
-    <div className="flex justify-center items-center space-x-2 text-sm text-gray-500 mt-4">
-      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-black-500"></div>
-      <div className="text-white-500">Chargement en cours...</div>
-    </div>
-  );
-
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && e.shiftKey) {
       e.preventDefault();
@@ -111,7 +132,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
         <div className="p-2 bg-black rounded-lg shadow-lg relative">
           <form onSubmit={handleFormSubmit} className="flex items-center">
             <FontAwesomeIcon icon={faSearch} className="w-4 h-5 absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <textarea
+            <input
               className="w-full p-3 pl-11 pr-10 text-sm text-gray-300 bg-black focus:outline-none rounded-lg border border-gray-700 resize-none custom-scrollbar"
               placeholder="Rechercher un film..."
               value={input}
@@ -126,6 +147,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
             )}
           </form>
         </div>
+        {isLoading && <Progress value={progressValue} />}
       </div>
       <style>
         {`
@@ -143,7 +165,6 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
           }
         `}
       </style>
-      {isLoading && loadingAnimation}
     </div>
   );
 }

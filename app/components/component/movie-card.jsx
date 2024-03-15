@@ -55,7 +55,7 @@ const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
             <FontAwesomeIcon icon={fasStar} size="xs" /> :
             <FontAwesomeIcon icon={farStar} size="xs" />}
         </HoverStarTrigger>
-        <HoverStarContent side="top" align="center">
+        <HoverStarContent side="right" align="right">
           <div
             className="text-xs text-gray-200 rounded-lg p-2 bg-black bg-opacity-90 p-4 z-30"
             style={
@@ -113,7 +113,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
             <HoverStarTrigger>
               <FontAwesomeIcon icon={getEmotionIcon(emotion)} size="xs" className='mt-2' />
             </HoverStarTrigger>
-            <HoverStarContent side="top" align="center">
+            <HoverStarContent side="right" align="right">
               <div
                 className="text-xs text-gray-200 rounded-lg p-2 bg-black bg-opacity-90 p-4"
                 style={
