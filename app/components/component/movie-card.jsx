@@ -79,9 +79,6 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
   const [isColorLoaded, setIsColorLoaded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
-  console.log('posterURL:', posterURL);
-  console.log('backdropURL:', backdropURL);
-
   useEffect(() => {
     if (backdropURL) {
       axios.get(`/api/color?imageUrl=${encodeURIComponent(backdropURL)}`)
