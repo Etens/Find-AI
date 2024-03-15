@@ -27,7 +27,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
           const newValue = oldValue + randomIncrease;
           return newValue > 90 ? 90 : newValue;
         });
-      }, 1700);
+      }, 400);
     } else {
       setProgressValue(100);
       setTimeout(() => setProgressValue(0), 1000);

@@ -5,11 +5,11 @@ import * as HoverCardPrimitive from "@radix-ui/react-hover-card"
 
 import { cn } from "@/lib/utils"
 
-const HoverStar= HoverCardPrimitive.Root
+const HoverBox = HoverCardPrimitive.Root
 
-const HoverStarTrigger = HoverCardPrimitive.Trigger
+const HoverBoxTrigger = HoverCardPrimitive.Trigger
 
-const HoverStarContent = React.forwardRef(({ className, align = "center", sideOffset = 4, ...props }, ref) => (
+const HoverBoxContent = React.forwardRef(({ className, align = "center", sideOffset = 4, ...props }, ref) => (
   <HoverCardPrimitive.Content
     ref={ref}
     align={align}
@@ -20,6 +20,6 @@ const HoverStarContent = React.forwardRef(({ className, align = "center", sideOf
     )}
     {...props} />
 ))
-HoverStarContent.displayName = HoverCardPrimitive.Content.displayName
+HoverBoxContent.displayName = HoverCardPrimitive.Content.displayName
 
-export { HoverStar, HoverStarTrigger, HoverStarContent }
+export { HoverBox, HoverBoxTrigger, HoverBoxContent }
