@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useChat } from 'ai/react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlassPlus, faCircleXmark, faCircleArrowDown } from '@fortawesome/free-solid-svg-icons';
 import { Progress } from "../../components/ui/progress";
 
 export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
@@ -131,7 +131,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
       <div className="p-1 w-full max-w-md">
         <div className="p-2 bg-black rounded-lg shadow-lg relative">
           <form onSubmit={handleFormSubmit} className="flex items-center">
-            <FontAwesomeIcon icon={faSearch} className="w-4 h-5 absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <FontAwesomeIcon icon={faMagnifyingGlassPlus} className="w-5 h-5 absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer" />
             <input
               className="w-full p-3 pl-11 pr-10 text-sm text-gray-300 bg-black focus:outline-none rounded-lg border border-gray-700 resize-none custom-scrollbar"
               placeholder="Rechercher un film..."
@@ -143,7 +143,10 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
               style={{ boxShadow: '0 0px 30px -15px white' }}
             />
             {input && (
-              <FontAwesomeIcon icon={faCircleXmark} className="w-5 h-5 absolute right-6 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer" onClick={clearInput} />
+              <>
+                <FontAwesomeIcon icon={faCircleXmark} className="w-5 h-5 absolute right-14 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer" onClick={clearInput} />
+                <FontAwesomeIcon icon={faCircleArrowDown} className="w-5 h-5 absolute right-6 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer" onClick={handleFormSubmit} />
+              </>
             )}
           </form>
         </div>
