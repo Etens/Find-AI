@@ -1,39 +1,52 @@
+import OpenAI from 'openai';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
-import MistralClient from '@mistralai/mistralai';
-const aiInstructionsData = require('./instructions.json');
 
-const client = new MistralClient(process.env.MISTRAL_API_KEY);
+// Création du client API OpenAI
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+});
 
-const aiInstructionsContent = aiInstructionsData.content.join('\n');
-const aiInstructions = {
-    role: 'system',
-    content: aiInstructionsContent
+console.log('API Key Received:', process.env.OPENAI_API_KEY);
+
+export const runtime = 'edge';
+
+// Chargement du fichier d'instructions
+const aiInstructionsData = require('./instructionsv2.json');
+
+// Préparation du message d'instruction basé sur le fichier JSON
+const instructionMessage = {
+    role: "system",
+    content: `Objectif: ${aiInstructionsData.introduction.goal}\n` +
+        `Expertise: ${aiInstructionsData.introduction.expertise}\n` +
+        `Format: ${aiInstructionsData.instructions.format}\n` +
+        `Structure: Langue du prompt - ${aiInstructionsData.instructions.structure.language_of_prompt}, ` +
+        `Titre - ${aiInstructionsData.instructions.structure.title}, ` +
+        `Description courte - ${aiInstructionsData.instructions.structure.brief_description}, ` +
+        `Réputation Web - Note: ${aiInstructionsData.instructions.structure.web_reputation.note}, ` +
+        `Explication: ${aiInstructionsData.instructions.structure.web_reputation.explanation}\n` +
+        `Emotion - ${aiInstructionsData.instructions.structure.emotion}\n` +
+        `Date de sortie - ${aiInstructionsData.instructions.structure.release_date}\n` +
+        `Priorité: ${aiInstructionsData.priority}\n` +
+        `Qualité: ${aiInstructionsData.quality}`
 };
 
 export async function POST(req) {
-    try {
-        const { messages } = await req.json();
-        messages.unshift(aiInstructions);
-        console.log('Messages sent to Mistral:', messages);
+    const { messages } = await req.json();
+    console.log('Messages received from client:', messages);
 
-        const response = await client.chatStream({
-            model: 'mistral-medium',
-            stream: true,
-            max_tokens: 1000,
-            topP: 1,
-            messages,
-        });
-        console.log('Response from Mistral:', response);
+    // Ajout des instructions au début des messages
+    const messagesWithInstructions = [instructionMessage, ...messages];
+    console.log('Messages with instructions:', messagesWithInstructions);
 
-        const stream = OpenAIStream(response);
-        console.log('StreamingTextResponse:', stream);
-        return new StreamingTextResponse(stream);
+    const response = await openai.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        stream: true,
+        messages: messagesWithInstructions,
+    });
 
-    } catch (error) {
-        console.error('Error calling Mistral API:', error);
-        return new Response(JSON.stringify({ error: "An error occurred while communicating with the Mistral API." }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
-        });
-    }
-}
+    const stream = new OpenAIStream(response);
+    console.log('Response from OpenAI:', response);
+
+    // Retourne la réponse sous forme de stream
+    return new StreamingTextResponse(stream);
+} 

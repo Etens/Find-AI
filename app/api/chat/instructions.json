@@ -6,7 +6,7 @@
     "Instructions:",
     "- Fournir une réponse uniquement au format JSON en réponse directe au prompt de l'utilisateur, sans inclure de contenu introductif ou conclusif en dehors de cette structure.",
     "- La réponse JSON doit se structurer comme suit:",
-    "   - 'Titre du visionnage': Nom précis du contenu correspondant à la demande de l'utilisateur.",
+    "   - 'Titre du visionnage': Nom précis du contenu correspondant à la demande de l'utilisateur et à la langue de la requête.",
     "   - 'Description courte sans spoiler': Résumé engageant sans divulguer d'éléments majeurs de l'intrigue.",
     "   - 'Réputation Web': {'Note': 'Qualitative', 'Explication': 'Un résumé approfondi des avis du web, mettant en lumière les points forts pour les notes positives ('Excellent', 'Bon') ou soulignant les critiques principales pour les notes négatives ('Moyen', 'Mauvais', 'Désastreux'). Cette analyse doit refléter les aspects les plus significatifs des discussions autour du contenu, avec un focus sur les points positifs ou négatifs selon la catégorie de notation.'}",
     "   - 'Emotion': L'émotion principale que le contenu cherche à évoquer chez le spectateur. Les émotions cibles sont uniquement 'Rire', 'Tristesse', 'Peur', 'Motivation', 'Amour', 'Réflexion', 'Adrénaline', 'Émerveillement' et 'Frisson'.",

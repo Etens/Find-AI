@@ -17,7 +17,7 @@ import {
   faFire,
 } from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
-import { HoverStar, HoverStarContent, HoverStarTrigger } from "../ui/hover-stars";
+import { HoverBox, HoverBoxContent, HoverBoxTrigger } from "../ui/hover-box";
 
 const getEmotionIcon = (emotion) => {
   const emotionIcons = {
@@ -49,13 +49,13 @@ const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
 
   for (let i = 0; i < 5; i++) {
     stars.push(
-      <HoverStar key={`hover-${i}`} delay={100} openOnHover>
-        <HoverStarTrigger>
+      <HoverBox key={`hover-${i}`} delay={100} openOnHover>
+        <HoverBoxTrigger>
           {i < rating ?
             <FontAwesomeIcon icon={fasStar} size="xs" /> :
             <FontAwesomeIcon icon={farStar} size="xs" />}
-        </HoverStarTrigger>
-        <HoverStarContent side="right" align="right">
+        </HoverBoxTrigger>
+        <HoverBoxContent side="left" align="left">
           <div
             className="text-xs text-gray-200 rounded-lg p-2 bg-black bg-opacity-90 p-4 z-30"
             style={
@@ -66,8 +66,8 @@ const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
           >
             {explication}
           </div>
-        </HoverStarContent>
-      </HoverStar>
+        </HoverBoxContent>
+      </HoverBox>
     );
   }
 
@@ -78,9 +78,6 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
   const [dominantColor, setDominantColor] = useState('#ffffff');
   const [isColorLoaded, setIsColorLoaded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-
-  console.log('posterURL:', posterURL);
-  console.log('backdropURL:', backdropURL);
 
   useEffect(() => {
     if (backdropURL) {
@@ -109,11 +106,11 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
       <div className="relative z-10 p-4 flex">
         <div className="flex flex-col items-center justify-center">
           <img className="w-24 h-36 rounded shadow-lg" src={posterURL} alt={title} />
-          <HoverStar className="mt-2">
-            <HoverStarTrigger>
+          <HoverBox className="mt-2">
+            <HoverBoxTrigger>
               <FontAwesomeIcon icon={getEmotionIcon(emotion)} size="xs" className='mt-2' />
-            </HoverStarTrigger>
-            <HoverStarContent side="right" align="right">
+            </HoverBoxTrigger>
+            <HoverBoxContent side="left" align="left">
               <div
                 className="text-xs text-gray-200 rounded-lg p-2 bg-black bg-opacity-90 p-4"
                 style={
@@ -124,8 +121,8 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
               >
                 {emotion}
               </div>
-            </HoverStarContent>
-          </HoverStar>
+            </HoverBoxContent>
+          </HoverBox>
           <div className="text-gray-300 text-xs flex space-x-1">
             {getRatingStars(note, explication, dominantColor, isColorLoaded)}
           </div>

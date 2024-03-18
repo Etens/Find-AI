@@ -8,12 +8,11 @@ import { Progress } from "../../components/ui/progress";
 
 export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
-  const [language, setLanguage] = useState('fr-FR');
   const [progressValue, setProgressValue] = useState(0);
+  const [language, setLanguage] = useState('fr-FR');
 
   useEffect(() => {
     let intervalId;
-
     if (isLoading) {
       setProgressValue(1);
       intervalId = setInterval(() => {
@@ -28,7 +27,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
           const newValue = oldValue + randomIncrease;
           return newValue > 90 ? 90 : newValue;
         });
-      }, 1700);
+      }, 400);
     } else {
       setProgressValue(100);
       setTimeout(() => setProgressValue(0), 1000);
@@ -40,9 +39,12 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
   useEffect(() => {
     if (!isLoading && messages.length > 0) {
 
-      const filteredAndParsedMessages = messages.filter(message => message.role === 'assistant').map(assistantMessage => {
+      const assistantMessages = messages.filter(message => message.role === 'assistant');
+
+      const filteredAndParsedMessages = assistantMessages.map(assistantMessage => {
+        const formattedContent = assistantMessage.content.replace(/\\n/g, "").trim();
         try {
-          return JSON.parse(assistantMessage.content);
+          return JSON.parse(formattedContent);
         } catch (error) {
           console.error('Erreur lors du parsing du contenu du message de l\'assistant:', error);
           return null;
@@ -50,10 +52,11 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
       }).filter(content => content !== null);
 
       setAssistantContent(filteredAndParsedMessages);
+      console.log('Messages de l\'assistant filtrés et parsés:', filteredAndParsedMessages);
 
       filteredAndParsedMessages.forEach(async (message) => {
         try {
-          const response = await axios.get(`/api/movie/search?query=${encodeURIComponent(message["Titre du visionnage"])}&language=${language}`);
+          const response = await axios.get(`/api/movie/search?query=${encodeURIComponent(message["Titre"])}&language=${language}`);
 
           if (response.data.results.length > 0) {
             const movieDetails = response.data.results.find(movie => movie.release_date.startsWith(message["Date de sortie"]));
@@ -71,15 +74,16 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
               const newMovieDetails = {
                 id,
                 posterURL,
+                duration,
+                mainActors,
                 backdropURL: movieImages.backdropUrl,
                 releaseDate: message["Date de sortie"],
-                title: message["Titre du visionnage"],
-                description: message["Description courte sans spoiler"],
+                title: message["Titre"],
+                description: message["Description courte"],
                 emotion: message["Emotion"],
-                note: message["Réputation Web"]?.Note,
-                explication: message["Réputation Web"]?.Explication,
-                duration,
-                mainActors
+                note: message["Réputation Web"],
+                explication: message["Explication"],
+                language: message["Langue du prompt"],
               };
 
               setMovieDetailsMDb(prevMovies => [...prevMovies.filter(movie => movie.id !== id), newMovieDetails]);
