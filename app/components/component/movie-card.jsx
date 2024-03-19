@@ -77,7 +77,6 @@ const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
 const MovieCard = ({ id, title, date, duration, emotion, description, posterURL, mainActors, explication, note, backdropURL }) => {
   const [dominantColor, setDominantColor] = useState('#ffffff');
   const [isColorLoaded, setIsColorLoaded] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     if (backdropURL) {
@@ -93,15 +92,21 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
     }
   }, [backdropURL]);
 
-  const boxShadowColor = isHovered && isColorLoaded ? dominantColor : '#ffffff';
-  const boxShadowStyle = { boxShadow: `0 0px 30px -15px ${boxShadowColor}` };
+  const cardStyle = {
+    transition: 'box-shadow 0.5s ease',
+    boxShadow: '0 0 30px -15px white',
+  };
 
   return (
     <div
       className={`relative overflow-hidden rounded-lg w-full shadow-lg bg-black ${id}`}
-      style={boxShadowStyle}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      style={cardStyle}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow = isColorLoaded ? `0 0 60px -15px ${dominantColor}` : `0 0 60px -15px white`;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = '0 0 30px -15px white';
+      }}
     >
       <div className="relative z-10 p-4 flex">
         <div className="flex flex-col items-center justify-center">
