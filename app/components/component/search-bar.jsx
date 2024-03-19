@@ -71,7 +71,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
               const mainActors = movieDetailsResponse.data.credits.cast.slice(0, 5).map(actor => actor.name).join(", ");
               const id = movieDetailsResponse.data.id;
 
-              const newMovieDetails = {
+                const newMovieDetails = {
                 id,
                 posterURL,
                 duration,
@@ -81,10 +81,10 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
                 title: message["Titre"],
                 description: message["Description courte"],
                 emotion: message["Emotion"],
-                note: message["Réputation Web"],
+                note: message["Réputation Web"] || message["Reputation Web"],
                 explication: message["Explication"],
                 language: message["Langue du prompt"],
-              };
+                };
 
               setMovieDetailsMDb(prevMovies => [...prevMovies.filter(movie => movie.id !== id), newMovieDetails]);
 
@@ -135,7 +135,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
       <div className="p-1 w-full max-w-md">
         <div className="p-2 bg-black rounded-lg shadow-lg relative">
           <form onSubmit={handleFormSubmit} className="flex items-center">
-            <FontAwesomeIcon icon={faMagnifyingGlassPlus} className="w-5 h-5 absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer" />
+            <FontAwesomeIcon icon={faMagnifyingGlassPlus} className="w-5 h-5 absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-500" />
             <input
               className="w-full p-3 pl-11 pr-10 text-sm text-gray-300 bg-black focus:outline-none rounded-lg border border-gray-700 resize-none custom-scrollbar"
               placeholder="Rechercher un film..."

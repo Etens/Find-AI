@@ -100,8 +100,8 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
     <div
       className={`relative overflow-hidden rounded-lg w-full shadow-lg bg-black ${id}`}
       style={boxShadowStyle}
-      onMouseEnter={() => setIsHovered(true)} 
-      onMouseLeave={() => setIsHovered(false)} 
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <div className="relative z-10 p-4 flex">
         <div className="flex flex-col items-center justify-center">
@@ -115,7 +115,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                 className="text-xs text-gray-200 rounded-lg p-2 bg-black bg-opacity-90 p-4"
                 style={
                   isColorLoaded ?
-                    { boxShadow: `0 0px 30px -15px ${dominantColor}`, color: 'white' } :
+                    { boxShadow: `0 0px 20px -10px ${dominantColor}`, color: 'white' } :
                     { boxShadow: 'none', color: 'white' }
                 }
               >

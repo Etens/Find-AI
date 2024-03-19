@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, {useState } from 'react';
 import SearchBar from "../../components/component/search-bar";
 import NavBar from "../../components/component/nav-bar";
 import MovieCard from '../../components/component/movie-card';
@@ -22,9 +22,7 @@ export default function Video() {
                         Find <br /> imaginez trouvez regardez
                     </h1>
                     <p className="mt-4 font-normal text-base text-neutral-300 max-w-lg text-center mx-auto">
-                        Vos idées deviennent des découvertes instantanées. Décrit par votre imagination, notre IA sélectionne le film ou la série parfaite en un instant.
-                        Finies les recherches sans fin, votre prochaine aventure vidéo n'attend que votre vision.
-                    </p>
+                    Votre imagination ouvre la porte à l'évasion cinématographique idéale. Dites adieu aux recherches, laissez-vous porter par l'inspiration.                        </p>
                     <SearchBar
                         setAssistantContent={setAssistantContent}
                         assistantContent={assistantContent}
@@ -50,6 +48,6 @@ export default function Video() {
                     ))}
                 </div>
             </div>
-        </main >
+        </main>
     );
 }

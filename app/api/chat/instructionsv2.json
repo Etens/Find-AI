@@ -10,7 +10,7 @@
             "title": "Le nom précis du contenu correspondant à la demande de l'utilisateur.",
             "brief_description": "Un résumé engageant sans divulguer d'éléments majeurs de l'intrigue.",
             "web_reputation": {
-                "note": "Qualitative, limitée aux valeurs 'Excellent', 'Bon', 'Moyen', 'Mauvais', 'Désastreux'.",
+                "note": "Qualitative, limitée aux valeurs 'Excellent', 'Bon', 'Moyen', 'Mauvais', 'Désastreux'. Cette évaluation doit être basée sur une analyse approfondie des avis du web.",
                 "explanation": "Un résumé approfondi des avis du web, mettant en lumière les points forts ou les critiques principales. Cette analyse doit refléter les aspects les plus significatifs des discussions autour du contenu."
             },
             "emotion": "L'émotion principale que le contenu cherche à évoquer chez le spectateur, limitée aux émotions 'Rire', 'Tristesse', 'Peur', 'Motivation', 'Amour', 'Réflexion', 'Adrénaline', 'Émerveillement' et 'Frisson'.",
