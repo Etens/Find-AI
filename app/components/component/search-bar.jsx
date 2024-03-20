@@ -5,11 +5,13 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlassPlus, faCircleXmark, faCircleArrowDown } from '@fortawesome/free-solid-svg-icons';
 import { Progress } from "../../components/ui/progress";
+import { SearchOptions } from '../component/search-options';
 
 export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
   const [progressValue, setProgressValue] = useState(0);
   const [language, setLanguage] = useState('fr-FR');
+  const [selectedOption, setSelectedOption] = useState('bottom');
 
   useEffect(() => {
     let intervalId;
@@ -71,7 +73,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
               const mainActors = movieDetailsResponse.data.credits.cast.slice(0, 5).map(actor => actor.name).join(", ");
               const id = movieDetailsResponse.data.id;
 
-                const newMovieDetails = {
+              const newMovieDetails = {
                 id,
                 posterURL,
                 duration,
@@ -84,7 +86,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
                 note: message["Réputation Web"] || message["Reputation Web"],
                 explication: message["Explication"],
                 language: message["Langue du prompt"],
-                };
+              };
 
               setMovieDetailsMDb(prevMovies => [...prevMovies.filter(movie => movie.id !== id), newMovieDetails]);
 
@@ -153,6 +155,29 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
               </>
             )}
           </form>
+        </div>
+        <div className="flex flex-wrap justify-center mt-3 space-x-2">
+          <SearchOptions
+            buttonLabel="Tri"
+            label="Sort By"
+            options={[
+              { value: 'date', label: 'Date' },
+              { value: 'popularity', label: 'Popularity' },
+            ]}
+            selectedOption={selectedOption}
+            onOptionChange={setSelectedOption}
+          />
+          <SearchOptions
+            buttonLabel="Filtre"
+            label="Filter By"
+            options={[
+              { value: 'movies', label: 'Movies' },
+              { value: 'series', label: 'Series' },
+              // Autres options
+            ]}
+            selectedOption={selectedOption}
+            onOptionChange={setSelectedOption}
+          />
         </div>
         {isLoading && <Progress value={progressValue} />}
       </div>
