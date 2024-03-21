@@ -1,52 +1,70 @@
-import * as React from "react";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuLabel,
-    DropdownMenuRadioGroup,
-    DropdownMenuRadioItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFilm, faLaugh, faHeartbeat, faGhost, faStar, faHourglassEnd, faGlobeEurope, faCalendarAlt, faUsers, faBuilding } from '@fortawesome/free-solid-svg-icons';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const getIcon = (iconName) => {
-    const icons = {
-        film: faFilm,
-        laugh: faLaugh,
-        heartbeat: faHeartbeat,
-        ghost: faGhost,
-        star: faStar,
-        hourglassEnd: faHourglassEnd,
-        globeEurope: faGlobeEurope,
-        calendarAlt: faCalendarAlt,
-        users: faUsers,
-        building: faBuilding,
-    };
-    return icons[iconName] || null;
-};
+export function SearchOptions({ label, options, selectedOption, buttonIcon, onInstructionChange }) {
 
-export function SearchOptions({ buttonLabel, label, options, selectedOption, onOptionChange }) {
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="default" className="text-xs">
-                    {buttonLabel}
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-                <DropdownMenuLabel>{label}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuRadioGroup value={selectedOption} onValueChange={onOptionChange}>
-                    {options.map(option => (
-                        <DropdownMenuRadioItem value={option.value} key={option.value}>
-                            {option.label}
-                        </DropdownMenuRadioItem>
-                    ))}
-                </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    );
+  const generateInstruction = (label, value) => {
+    switch (label) {
+      case "Type de Médias":
+        return `Je recherche un ${value.toLowerCase()}`;
+      case "Note":
+        let notationDescription;
+        switch (value.toLowerCase()) {
+          case "excellent":
+            notationDescription = "excellente";
+            break;
+          case "good":
+            notationDescription = "bonne";
+            break;
+          default:
+            notationDescription = value.toLowerCase();
+        }
+        return `avec une notation ${notationDescription}`;
+      case "Durée":
+        return `d'une durée approximative de ${value.toLowerCase()}`;
+      case "Emotion":
+        return `provoquant une émotion de ${value.toLowerCase()}`;
+      case "Popularité":
+        return `qui est ${value.toLowerCase()} populaire`;
+      case "Décennie":
+        return `sorti dans les années ${value}`;
+      case "Public":
+        return `adapté à un public ${value.toLowerCase()}`;
+      case "Studio de Production":
+        return `produit par un studio ${value.toLowerCase()}`;
+      case "Origine de Production":
+        return `d'une production d'origine ${value.toLowerCase()}`;
+      default:
+        return "";
+    }
+  };
+  const handleOptionChange = (value) => {
+    const newLabel = options.find((option) => option.value === value)?.label;
+    const instruction = generateInstruction(label, newLabel);
+    onInstructionChange(instruction);
+    console.log(instruction); 
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button size="sm" variant="default" className="text-xs flex items-center justify-center placeholder:opacity-50" style={{ whiteSpace: "nowrap" }}>
+          {buttonIcon && <FontAwesomeIcon icon={buttonIcon} className="mr-2" />}
+          {label} 
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuLabel>{label}</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuRadioGroup value={selectedOption} onValueChange={(value) => handleOptionChange(value)}>
+          {options.map((option) => (
+            <DropdownMenuRadioItem value={option.value} key={option.value}>
+              {option.label}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }

@@ -117,7 +117,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
             </HoverBoxTrigger>
             <HoverBoxContent side="left" align="left">
               <div
-                className="text-xs text-gray-200 rounded-lg p-2 bg-black bg-opacity-90 p-4"
+                className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-4"
                 style={
                   isColorLoaded ?
                     { boxShadow: `0 0px 20px -10px ${dominantColor}`, color: 'white' } :
