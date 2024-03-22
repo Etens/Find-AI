@@ -5,16 +5,17 @@ import { useChat } from "ai/react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlassPlus, faCircleXmark, faCircleArrowDown } from "@fortawesome/free-solid-svg-icons";
-import { faFilm as iconMedia, faLaughBeam as iconFunny, faStar as iconExcellent, faHourglassEnd as iconDuration, faGlobeEurope as iconFrench, faFire as iconPopular, faCalendarAlt as icon2020s, faUsers as iconKids, faBuilding as iconIndie } from "@fortawesome/free-solid-svg-icons";
 import { Textarea } from "../../components/ui/textarea";
 import { Progress } from "../../components/ui/progress";
-import { SearchOptions } from "../component/search-options";
+import SearchOptionsList from "./search-options-list";
+
 
 export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
   const [progressValue, setProgressValue] = useState(0);
   const [language, setLanguage] = useState("fr-FR");
   const [inputAnimation, setInputAnimation] = useState("");
+  const [step, setStep] = useState(0);
 
   useEffect(() => {
     let intervalId;
@@ -116,6 +117,8 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
 
   const clearInput = () => {
     handleInputChange({ target: { value: "" } });
+    const textarea = document.querySelector(".pl-12");
+    textarea.style.height = "inherit";
   };
 
   const handleKeyDown = (e) => {
@@ -140,197 +143,65 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
 
   const handleInputHeight = (e) => {
     e.target.style.height = "inherit";
-    const computed = window.getComputedStyle(e.target);
-    const totalHeight = parseInt(computed.getPropertyValue('border-top-width'), 10)
-      + parseInt(computed.getPropertyValue('border-bottom-width'), 10)
-      + e.target.scrollHeight;
+  };
 
-    e.target.style.height = `${totalHeight}px`;
+  const handleOptionChange = (instruction, nextStep) => {
+    const newValue = `${input} ${instruction}`.trim();
+    handleInputChange({ target: { value: newValue } });
+  
+    const textarea = document.querySelector(".pl-12");
+    if (textarea) {
+      textarea.style.height = "inherit"; 
+      const computed = window.getComputedStyle(textarea);
+      const totalHeight = parseInt(computed.getPropertyValue('border-top-width'), 10)
+        + parseInt(computed.getPropertyValue('padding-top'), 10) 
+        + textarea.scrollHeight
+      textarea.style.height = `${totalHeight}px`;
+    }
+  
+    setInputAnimation('animate-flash');
+    setTimeout(() => setInputAnimation(''), 300);
+    if (nextStep !== undefined) {
+      setStep(nextStep);
+    }
   };
 
   return (
     <div className="flex flex-col items-center py-9">
       <div className="p-1 w-full max-w-md">
         <div className="p-2 bg-black rounded-lg shadow-lg relative">
-          <form onSubmit={handleFormSubmit} className="flex items-center">
-            <FontAwesomeIcon icon={faMagnifyingGlassPlus} className="w-5 h-5 absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-500" />
-            <Textarea
-              className={`${inputAnimation}`}
-              placeholder="Imaginez..."
-              value={input}
-              onChange={(e) => {
-                handleInputChange(e); 
-                handleInputHeight(e); 
-              }}
-              onKeyDown={handleKeyDown}
-              autoFocus 
-              rows={1}
-              style={{ boxShadow: "0 0px 30px -15px white" }}
-            />
-            {input && (
-              <>
-                <FontAwesomeIcon icon={faCircleXmark} className="w-5 h-5 absolute right-14 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer" onClick={clearInput} />
-                <FontAwesomeIcon icon={faCircleArrowDown} className="w-5 h-5 absolute right-6 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer" onClick={handleFormSubmit} />
-              </>
-            )}
+          <form onSubmit={handleFormSubmit} className="relative flex flex-col justify-between h-full">
+            <div className="w-full">
+              <Textarea
+                className={`${inputAnimation} pl-12 pr-16 min-h-14 overflow-hidden resize-none`}
+                placeholder="Imaginez..."
+                value={input}
+                onChange={(e) => {
+                  handleInputChange(e);
+                  handleInputHeight(e);
+                }}
+                onKeyDown={handleKeyDown}
+                autoFocus
+                rows={1}
+                style={{ boxShadow: "0 0px 30px -15px white" }}
+              />
+              <div className="absolute inset-y-0 left-0 flex flex-start pl-5 mt-4">
+                <FontAwesomeIcon icon={faMagnifyingGlassPlus} className="w-5 h-5 text-gray-500" />
+              </div>
+              {input && (
+                <>
+                  <div className="absolute inset-y-0 right-0 flex flex-start pr-3 mt-4 space-x-2">
+                    <FontAwesomeIcon icon={faCircleXmark} className="w-5 h-5 text-gray-500 cursor-pointer" onClick={clearInput} />
+                    <FontAwesomeIcon icon={faCircleArrowDown} className="w-5 h-5 text-gray-500 cursor-pointer" onClick={handleFormSubmit} />
+                  </div>
+                </>
+              )}
+            </div>
           </form>
         </div>
-        <div className="flex flex-nowrap justify-center mt-3 space-x-2 text-xs text-gray-300 max-w-full">
-          <SearchOptions
-            label="Type de Médias"
-            options={[
-              { value: "film", label: "Film" },
-              { value: "series", label: "Série" },
-              { value: "anime", label: "Animé" },
-              { value: "documentary", label: "Documentaire" },
-            ]}
-            buttonIcon={iconMedia}
-            onInstructionChange={(instruction) => {
-              const newValue = `${input} ${instruction}`.trim();
-              handleInputChange({ target: { value: newValue } });
-              setInputAnimation('animate-flash');
-              setTimeout(() => setInputAnimation(''), 300);
-            }}
-          />
-          <SearchOptions
-            label="Note"
-            options={[
-              { value: "excellent", label: "Excellent" },
-              { value: "good", label: "Bon" },
-              { value: "average", label: "Moyen" },
-              { value: "poor", label: "Mauvais" },
-              { value: "disastrous", label: "Désastreux" },
-            ]}
-            buttonIcon={iconExcellent}
-            onInstructionChange={(instruction) => {
-              const newValue = `${input} ${instruction}`.trim();
-              handleInputChange({ target: { value: newValue } });
-              setInputAnimation('animate-flash');
-              setTimeout(() => setInputAnimation(''), 300);
-            }}
-          />
-          <SearchOptions
-            label="Durée"
-            options={[
-              { value: "short", label: "1h" },
-              { value: "medium", label: "2h" },
-              { value: "long", label: "3h" },
-            ]}
-            buttonIcon={iconDuration}
-            onInstructionChange={(instruction) => {
-              const newValue = `${input} ${instruction}`.trim();
-              handleInputChange({ target: { value: newValue } });
-              setInputAnimation('animate-flash');
-              setTimeout(() => setInputAnimation(''), 300);
-            }}
-          />
-          <SearchOptions
-            label="Emotion"
-            options={[
-              { value: "laughter", label: "Rire" },
-              { value: "sadness", label: "Emouvant" },
-              { value: "fear", label: "Peur" },
-              { value: "motivation", label: "Motivation" },
-              { value: "love", label: "Amour" },
-              { value: "reflection", label: "Réflexion" },
-              { value: "adrenaline", label: "Adrénaline" },
-              { value: "wonder", label: "Émerveillement" },
-              { value: "thrill", label: "Frisson" },
-            ]}
-            buttonIcon={iconFunny}
-            onInstructionChange={(instruction) => {
-              const newValue = `${input} ${instruction}`.trim();
-              handleInputChange({ target: { value: newValue } });
-              setInputAnimation('animate-flash');
-              setTimeout(() => setInputAnimation(''), 300);
-            }}
-          />
-          <SearchOptions
-            label="Popularité"
-            options={[
-              { value: "popular", label: "Populaire" },
-              { value: "unpopular", label: "Peu Populaire" },
-              { value: "unknown", label: "Inconnue" },
-            ]}
-            buttonIcon={iconPopular}
-            onInstructionChange={(instruction) => {
-              const newValue = `${input} ${instruction}`.trim();
-              handleInputChange({ target: { value: newValue } });
-              setInputAnimation('animate-flash');
-              setTimeout(() => setInputAnimation(''), 300);
-            }}
-          />
-          <SearchOptions
-            label="Décennie"
-            options={[
-              { value: "2020s", label: "Années 2020" },
-              { value: "2010s", label: "Années 2010" },
-              { value: "2000s", label: "Années 2000" },
-              { value: "90s", label: "Années 90" },
-              { value: "older", label: "Années 80 et avant" },
-            ]}
-            buttonIcon={icon2020s}
-            onInstructionChange={(instruction) => {
-              const newValue = `${input} ${instruction}`.trim();
-              handleInputChange({ target: { value: newValue } });
-              setInputAnimation('animate-flash');
-              setTimeout(() => setInputAnimation(''), 300);
-            }}
-          />
-          <SearchOptions
-            label="Public"
-            options={[
-              { value: "kids", label: "Enfants" },
-              { value: "teens", label: "Adolescents" },
-              { value: "adults", label: "Adultes" },
-            ]}
-            buttonIcon={iconKids}
-            onInstructionChange={(instruction) => {
-              const newValue = `${input} ${instruction}`.trim();
-              handleInputChange({ target: { value: newValue } });
-              setInputAnimation('animate-flash');
-              setTimeout(() => setInputAnimation(''), 300);
-            }}
-          />
-          <SearchOptions
-            label="Studio de Production"
-            options={[
-              { value: "indie", label: "Indépendant" },
-              { value: "large", label: "Grand Studio" },
-            ]}
-            buttonIcon={iconIndie}
-            onInstructionChange={(instruction) => {
-              const newValue = `${input} ${instruction}`.trim();
-              handleInputChange({ target: { value: newValue } });
-              setInputAnimation('animate-flash');
-              setTimeout(() => setInputAnimation(''), 300);
-            }}
-          />
-          <SearchOptions
-            label="Origine de Production"
-            options={[
-              { value: "us", label: "Hollywood (États-Unis)" },
-              { value: "uk", label: "Britannique" },
-              { value: "france", label: "Français" },
-              { value: "india", label: "Bollywood (Inde)" },
-              { value: "korea", label: "Coréen" },
-              { value: "japan", label: "Japonais" },
-              { value: "china", label: "Chinois" },
-              { value: "italy", label: "Italien" },
-              { value: "spain", label: "Espagnol" },
-              { value: "international", label: "International" },
-            ]}
-            buttonIcon={iconFrench}
-            onInstructionChange={(instruction) => {
-              const newValue = `${input} ${instruction}`.trim();
-              handleInputChange({ target: { value: newValue } });
-              setInputAnimation('animate-flash');
-              setTimeout(() => setInputAnimation(''), 300);
-            }}
-          />
-        </div>
-        {isLoading && <Progress value={progressValue} />}
+        <SearchOptionsList step={step} handleOptionChange={handleOptionChange} />
       </div>
+      {isLoading && <Progress value={progressValue} />}
     </div>
   );
 }
