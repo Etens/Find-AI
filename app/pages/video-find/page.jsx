@@ -12,7 +12,7 @@ export default function Video() {
   return (
     <main className="flex flex-col items-center justify-center w-full h-full">
       <Spotlight
-        className="top-40 left-0 md:left-60 md:-top-20 z-20"
+        className="top-40 left-0 md:left-60 md:-top-20 z-50"
         fill="white"
       />
       <NavBar />

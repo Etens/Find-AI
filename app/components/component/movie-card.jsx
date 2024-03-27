@@ -57,7 +57,7 @@ const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
         </HoverBoxTrigger>
         <HoverBoxContent side="left" align="left">
           <div
-            className="text-xs text-gray-200 rounded-lg p-2 bg-black bg-opacity-90 p-4 z-30"
+            className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-4 z-10"
             style={
               isColorLoaded ?
                 { boxShadow: `0 0px 30px -15px ${dominantColor}`, color: 'white' } :
@@ -108,10 +108,10 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
         e.currentTarget.style.boxShadow = '0 0 30px -15px white';
       }}
     >
-      <div className="relative z-10 p-4 flex">
+      <div className="relative z-30 p-4 flex">
         <div className="flex flex-col items-center justify-center">
           <img className="w-24 h-36 rounded shadow-lg" src={posterURL} alt={title} />
-          <HoverBox className="mt-2">
+          <HoverBox className="mt-2 z-20" delay={100} openOnHover>
             <HoverBoxTrigger>
               <FontAwesomeIcon icon={getEmotionIcon(emotion)} size="xs" className='mt-2' />
             </HoverBoxTrigger>

@@ -1,8 +1,12 @@
+"use client";
+
+import { useState } from 'react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export function SearchOptions({ label, options, selectedOption, buttonIcon, onInstructionChange }) {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const generateInstruction = (label, value) => {
     switch (label) {
@@ -43,20 +47,20 @@ export function SearchOptions({ label, options, selectedOption, buttonIcon, onIn
     const newLabel = options.find((option) => option.value === value)?.label;
     const instruction = generateInstruction(label, newLabel);
     onInstructionChange(instruction);
-    console.log(instruction); 
+    console.log(instruction);
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu onOpenChange={(open) => setIsDropdownOpen(open)}>
       <DropdownMenuTrigger asChild>
-        <Button size="sm" variant="default" className="text-xs flex items-center justify-center placeholder:opacity-50" style={{ whiteSpace: "nowrap" }}>
+        <Button
+          size="sm"
+          variant="default">
           {buttonIcon && <FontAwesomeIcon icon={buttonIcon} className="mr-2" />}
-          {label} 
+          {label}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>{label}</DropdownMenuLabel>
-        <DropdownMenuSeparator />
         <DropdownMenuRadioGroup value={selectedOption} onValueChange={(value) => handleOptionChange(value)}>
           {options.map((option) => (
             <DropdownMenuRadioItem value={option.value} key={option.value}>

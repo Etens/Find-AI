@@ -1,39 +1,41 @@
-import React from 'react';
+"use client";
+
+import { useState } from "react";
 import { SearchOptions } from "../component/search-options";
 import { faFilm as iconMedia, faLaughBeam as iconFunny, faStar as iconExcellent, faHourglassEnd as iconDuration, faGlobeEurope as iconFrench, faFire as iconPopular, faCalendarAlt as icon2020s, faUsers as iconKids, faBuilding as iconIndie } from "@fortawesome/free-solid-svg-icons";
 
 const SearchOptionsList = ({ step, handleOptionChange }) => {
+    const [selectedMediaType, setSelectedMediaType] = useState('');
+
+    const handleMediaTypeChange = (instruction) => {
+        setSelectedMediaType(instruction);
+        handleOptionChange(instruction, 1);
+        console.log(instruction);
+    };
+
+    const showDurationOptions = selectedMediaType === "Je recherche un film" || selectedMediaType === "Je recherche un documentaire" || selectedMediaType === "Je recherche un film d'animation";
+
+    const emotionStep = showDurationOptions ? 2 : 1;
+
     return (
         <>
-            <div className="flex flex-nowrap justify-center space-x-2 text-xs text-gray-300 max-w-full mt-6">
+            <div className="flex justify-center space-x-2 text-xs text-gray-300 max-w-full mt-6">
                 {step >= 0 && (
                     <SearchOptions
                         label="Type de Médias"
                         options={[
                             { value: "film", label: "Film" },
                             { value: "series", label: "Série" },
-                            { value: "anime", label: "Animé" },
                             { value: "documentary", label: "Documentaire" },
+                            { value: "annimation", label: "Film d'Animation" },
+                            { value: "anime", label: "Animé" },
                         ]}
                         buttonIcon={iconMedia}
-                        onInstructionChange={(instruction) => handleOptionChange(instruction, 1)}
+                        onInstructionChange={handleMediaTypeChange}
+                        shouldAnimate={step === 0}
                     />
                 )}
-                {step >= 1 && (
-                    <SearchOptions
-                        label="Note"
-                        options={[
-                            { value: "excellent", label: "Excellent" },
-                            { value: "good", label: "Bon" },
-                            { value: "average", label: "Moyen" },
-                            { value: "poor", label: "Mauvais" },
-                            { value: "disastrous", label: "Désastreux" },
-                        ]}
-                        buttonIcon={iconExcellent}
-                        onInstructionChange={(instruction) => handleOptionChange(instruction, 2)}
-                    />
-                )}
-                {step >= 2 && (
+                {step >= 1 && showDurationOptions && (
                     <SearchOptions
                         label="Durée"
                         options={[
@@ -42,10 +44,10 @@ const SearchOptionsList = ({ step, handleOptionChange }) => {
                             { value: "long", label: "3h" },
                         ]}
                         buttonIcon={iconDuration}
-                        onInstructionChange={(instruction) => handleOptionChange(instruction, 3)}
+                        onInstructionChange={(instruction) => handleOptionChange(instruction, 2)}
                     />
                 )}
-                {step >= 3 && (
+                {step >= emotionStep && (
                     <SearchOptions
                         label="Emotion"
                         options={[
@@ -60,6 +62,20 @@ const SearchOptionsList = ({ step, handleOptionChange }) => {
                             { value: "thrill", label: "Frisson" },
                         ]}
                         buttonIcon={iconFunny}
+                        onInstructionChange={(instruction) => handleOptionChange(instruction, 3)}
+                    />
+                )}
+                {step >= 3 && (
+                    <SearchOptions
+                        label="Note"
+                        options={[
+                            { value: "excellent", label: "Excellent" },
+                            { value: "good", label: "Bon" },
+                            { value: "average", label: "Moyen" },
+                            { value: "poor", label: "Mauvais" },
+                            { value: "disastrous", label: "Désastreux" },
+                        ]}
+                        buttonIcon={iconExcellent}
                         onInstructionChange={(instruction) => handleOptionChange(instruction, 4)}
                     />
                 )}

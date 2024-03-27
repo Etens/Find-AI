@@ -97,7 +97,6 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
               };
 
               setMovieDetailsMDb((prevMovies) => [...prevMovies.filter((movie) => movie.id !== id), newMovieDetails]);
-
               console.log("Détails du film récupérés:", newMovieDetails);
             }
           } else {
@@ -117,6 +116,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
 
   const clearInput = () => {
     handleInputChange({ target: { value: "" } });
+    setStep(0);
     const textarea = document.querySelector(".pl-12");
     textarea.style.height = "inherit";
   };
@@ -168,7 +168,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
 
   return (
     <div className="flex flex-col items-center py-9">
-      <div className="p-1 w-full max-w-md">
+      <div className="p-1 w-full max-w-xl">
         <div className="p-2 bg-black rounded-lg shadow-lg relative">
           <form onSubmit={handleFormSubmit} className="relative flex flex-col justify-between h-full">
             <div className="w-full">
