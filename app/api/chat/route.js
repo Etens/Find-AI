@@ -1,7 +1,6 @@
 import OpenAI from 'openai';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
 
-// Création du client API OpenAI
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
@@ -10,10 +9,8 @@ console.log('API Key Received:', process.env.OPENAI_API_KEY);
 
 export const runtime = 'edge';
 
-// Chargement du fichier d'instructions
 const aiInstructionsData = require('./instructionsv2.json');
 
-// Préparation du message d'instruction basé sur le fichier JSON
 const instructionMessage = {
     role: "system",
     content: `Objectif: ${aiInstructionsData.introduction.goal}\n` +
@@ -34,7 +31,6 @@ export async function POST(req) {
     const { messages } = await req.json();
     console.log('Messages received from client:', messages);
 
-    // Ajout des instructions au début des messages
     const messagesWithInstructions = [instructionMessage, ...messages];
     console.log('Messages with instructions:', messagesWithInstructions);
 
@@ -42,11 +38,11 @@ export async function POST(req) {
         model: 'gpt-3.5-turbo',
         stream: true,
         messages: messagesWithInstructions,
+        temperature: 1,
     });
 
     const stream = new OpenAIStream(response);
     console.log('Response from OpenAI:', response);
 
-    // Retourne la réponse sous forme de stream
     return new StreamingTextResponse(stream);
 } 

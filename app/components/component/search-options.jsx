@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -26,7 +26,7 @@ export function SearchOptions({ label, options, selectedOption, buttonIcon, onIn
         }
         return `avec une notation ${notationDescription}`;
       case "Durée":
-        return `d'une durée approximative de ${value.toLowerCase()}`;
+        return `d'une durée maximale de ${value.toLowerCase()}`;
       case "Emotion":
         return `provoquant une émotion de ${value.toLowerCase()}`;
       case "Popularité":
@@ -52,6 +52,7 @@ export function SearchOptions({ label, options, selectedOption, buttonIcon, onIn
 
   return (
     <DropdownMenu onOpenChange={(open) => setIsDropdownOpen(open)}>
+      {console.log(options)}
       <DropdownMenuTrigger asChild>
         <Button
           size="sm"

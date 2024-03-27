@@ -15,7 +15,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
   const [progressValue, setProgressValue] = useState(0);
   const [language, setLanguage] = useState("fr-FR");
   const [inputAnimation, setInputAnimation] = useState("");
-  const [step, setStep] = useState(0);
+  const [showOptions, setShowOptions] = useState(true);
 
   useEffect(() => {
     let intervalId;
@@ -112,13 +112,14 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     handleSubmit(e);
+    clearInput();
   };
 
   const clearInput = () => {
     handleInputChange({ target: { value: "" } });
-    setStep(0);
     const textarea = document.querySelector(".pl-12");
     textarea.style.height = "inherit";
+    setShowOptions(false);
   };
 
   const handleKeyDown = (e) => {
@@ -145,25 +146,22 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
     e.target.style.height = "inherit";
   };
 
-  const handleOptionChange = (instruction, nextStep) => {
+  const handleOptionChange = (instruction) => {
     const newValue = `${input} ${instruction}`.trim();
     handleInputChange({ target: { value: newValue } });
-  
+
     const textarea = document.querySelector(".pl-12");
     if (textarea) {
-      textarea.style.height = "inherit"; 
+      textarea.style.height = "inherit";
       const computed = window.getComputedStyle(textarea);
       const totalHeight = parseInt(computed.getPropertyValue('border-top-width'), 10)
-        + parseInt(computed.getPropertyValue('padding-top'), 10) 
+        + parseInt(computed.getPropertyValue('padding-top'), 10)
         + textarea.scrollHeight
       textarea.style.height = `${totalHeight}px`;
     }
-  
+
     setInputAnimation('animate-flash');
     setTimeout(() => setInputAnimation(''), 300);
-    if (nextStep !== undefined) {
-      setStep(nextStep);
-    }
   };
 
   return (
@@ -199,7 +197,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
             </div>
           </form>
         </div>
-        <SearchOptionsList step={step} handleOptionChange={handleOptionChange} />
+        <SearchOptionsList handleOptionChange={handleOptionChange} showOptions={showOptions} setShowOptions={setShowOptions} />
       </div>
       {isLoading && <Progress value={progressValue} />}
     </div>
