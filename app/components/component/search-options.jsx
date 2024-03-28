@@ -32,9 +32,11 @@ export function SearchOptions({ label, options, selectedOption, buttonIcon, onIn
       case "Popularité":
         return `qui est ${value.toLowerCase()} populaire`;
       case "Décennie":
-        return `sorti dans les années ${value}`;
+        return `sorti dans les ${value.toLowerCase()}`;
       case "Public":
         return `adapté à un public ${value.toLowerCase()}`;
+      case "Plateforme":
+        return `disponible sur ${value}`;
       case "Studio de Production":
         return `produit par un studio ${value.toLowerCase()}`;
       case "Origine de Production":
@@ -46,13 +48,13 @@ export function SearchOptions({ label, options, selectedOption, buttonIcon, onIn
   const handleOptionChange = (value) => {
     const newLabel = options.find((option) => option.value === value)?.label;
     const instruction = generateInstruction(label, newLabel);
-    onInstructionChange(instruction);
-    console.log(instruction);
+    console.log("instruction", instruction);
+    console.log("label", newLabel);
+    onInstructionChange(instruction, label);
   };
 
   return (
     <DropdownMenu onOpenChange={(open) => setIsDropdownOpen(open)}>
-      {console.log(options)}
       <DropdownMenuTrigger asChild>
         <Button
           size="sm"

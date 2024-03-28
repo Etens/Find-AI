@@ -9,17 +9,17 @@ import {
     faFire as iconPopular,
     faCalendarAlt as icon2020s,
     faUsers as iconKids,
-    faBuilding as iconIndie
+    faBuilding as iconIndie,
+    faCirclePlay as iconPlay,
 } from "@fortawesome/free-solid-svg-icons";
 
 const SearchOptionsList = ({ handleOptionChange, showOptions, setShowOptions }) => {
     const [selectedMediaType, setSelectedMediaType] = useState('');
 
-    const handleMediaTypeChange = (instruction) => {
+    const handleMediaTypeChange = (instruction, label) => {
         setSelectedMediaType(instruction);
         setShowOptions(true);
-        handleOptionChange(instruction, 1);
-        console.log(instruction);
+        handleOptionChange(instruction, label);
     };
 
     const showDurationOptions = selectedMediaType === "Je recherche un film" || selectedMediaType === "Je recherche un documentaire" || selectedMediaType === "Je recherche un film d'animation";
@@ -28,7 +28,7 @@ const SearchOptionsList = ({ handleOptionChange, showOptions, setShowOptions }) 
 
     return (
         <>
-            <div className="text-xs text-gray-300 max-w-full mt-6 flex flex-wrap justify-center space-y-2">
+            <div className="text-xs text-gray-300 max-w-full flex flex-wrap justify-center">
                 <SearchOptions
                     label="Type de Médias"
                     options={[
@@ -42,7 +42,7 @@ const SearchOptionsList = ({ handleOptionChange, showOptions, setShowOptions }) 
                     onInstructionChange={handleMediaTypeChange}
                     shouldAnimate={!showAllOptions}
                 />
-                <div className="flex flex-wrap justify-center w-full mt-2">
+                <div className="flex flex-wrap justify-center space-x-2 mt-1">
                     {showAllOptions && showDurationOptions && showOptions && (
                         <SearchOptions
                             label="Durée"
@@ -52,7 +52,7 @@ const SearchOptionsList = ({ handleOptionChange, showOptions, setShowOptions }) 
                                 { value: "long", label: "3h" },
                             ]}
                             buttonIcon={iconDuration}
-                            onInstructionChange={(instruction) => handleOptionChange(instruction, 2)}
+                            onInstructionChange={(instruction, label) => handleOptionChange(instruction, label)}
                         />
                     )}
                     {showAllOptions && showOptions && (
@@ -71,7 +71,7 @@ const SearchOptionsList = ({ handleOptionChange, showOptions, setShowOptions }) 
                                     { value: "thrill", label: "Frisson" },
                                 ]}
                                 buttonIcon={iconFunny}
-                                onInstructionChange={(instruction) => handleOptionChange(instruction, 3)}
+                                onInstructionChange={(instruction, label) => handleOptionChange(instruction, label)}
                             />
                             <SearchOptions
                                 label="Note"
@@ -83,17 +83,16 @@ const SearchOptionsList = ({ handleOptionChange, showOptions, setShowOptions }) 
                                     { value: "disastrous", label: "Désastreux" },
                                 ]}
                                 buttonIcon={iconExcellent}
-                                onInstructionChange={(instruction) => handleOptionChange(instruction, 4)}
+                                onInstructionChange={(instruction, label) => handleOptionChange(instruction, label)}
                             />
                             <SearchOptions
                                 label="Popularité"
                                 options={[
                                     { value: "popular", label: "Populaire" },
                                     { value: "unpopular", label: "Peu Populaire" },
-                                    { value: "unknown", label: "Inconnue" },
                                 ]}
                                 buttonIcon={iconPopular}
-                                onInstructionChange={(instruction) => handleOptionChange(instruction, 5)}
+                                onInstructionChange={(instruction, label) => handleOptionChange(instruction, label)}
                             />
                             <SearchOptions
                                 label="Décennie"
@@ -105,7 +104,7 @@ const SearchOptionsList = ({ handleOptionChange, showOptions, setShowOptions }) 
                                     { value: "older", label: "Années 80 et avant" },
                                 ]}
                                 buttonIcon={icon2020s}
-                                onInstructionChange={(instruction) => handleOptionChange(instruction, 6)}
+                                onInstructionChange={(instruction, label) => handleOptionChange(instruction, label)}
                             />
                             <SearchOptions
                                 label="Public"
@@ -115,7 +114,23 @@ const SearchOptionsList = ({ handleOptionChange, showOptions, setShowOptions }) 
                                     { value: "adults", label: "Adultes" },
                                 ]}
                                 buttonIcon={iconKids}
-                                onInstructionChange={(instruction) => handleOptionChange(instruction, 7)}
+                                onInstructionChange={(instruction, label) => handleOptionChange(instruction, label)}
+                            />
+                            <SearchOptions
+                                label="Plateforme"
+                                options={[
+                                    { value: "netflix", label: "Netflix" },
+                                    { value: "prime", label: "Amazon Prime" },
+                                    { value: "disney", label: "Disney+" },
+                                    { value: "hbo", label: "HBO" },
+                                    { value: "apple", label: "Apple TV+" },
+                                    { value: "youtube", label: "YouTube" },
+                                    { value: "mycanal", label: "myCanal" },
+                                    { value: "arte", label: "Arte" },
+                                    { value: "crunchyroll", label: "Crunchyroll" },
+                                ]}
+                                buttonIcon={iconPlay}
+                                onInstructionChange={(instruction, label) => handleOptionChange(instruction, label)}
                             />
                             <SearchOptions
                                 label="Studio de Production"
@@ -124,7 +139,7 @@ const SearchOptionsList = ({ handleOptionChange, showOptions, setShowOptions }) 
                                     { value: "large", label: "Grand Studio" },
                                 ]}
                                 buttonIcon={iconIndie}
-                                onInstructionChange={(instruction) => handleOptionChange(instruction, 8)}
+                                onInstructionChange={(instruction, label) => handleOptionChange(instruction, label)}
                             />
                             <SearchOptions
                                 label="Origine de Production"
@@ -141,7 +156,7 @@ const SearchOptionsList = ({ handleOptionChange, showOptions, setShowOptions }) 
                                     { value: "international", label: "International" },
                                 ]}
                                 buttonIcon={iconFrench}
-                                onInstructionChange={(instruction) => handleOptionChange(instruction, 9)}
+                                onInstructionChange={(instruction, label) => handleOptionChange(instruction, label)}
                             />
                         </>
                     )}

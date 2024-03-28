@@ -16,6 +16,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
   const [language, setLanguage] = useState("fr-FR");
   const [inputAnimation, setInputAnimation] = useState("");
   const [showOptions, setShowOptions] = useState(true);
+  const [selectedOptions, setSelectedOptions] = useState([]);
 
   useEffect(() => {
     let intervalId;
@@ -120,6 +121,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
     const textarea = document.querySelector(".pl-12");
     textarea.style.height = "inherit";
     setShowOptions(false);
+    setSelectedOptions([]);
   };
 
   const handleKeyDown = (e) => {
@@ -146,7 +148,18 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
     e.target.style.height = "inherit";
   };
 
-  const handleOptionChange = (instruction) => {
+  const handleOptionChange = (instruction, label) => {
+    const existingIndex = selectedOptions.findIndex(option => option.label === label);
+
+    let newSelectedOptions;
+    if (existingIndex !== -1) {
+      newSelectedOptions = selectedOptions.map((option, index) =>
+        index === existingIndex ? { label, value: instruction } : option
+      );
+    } else {
+      newSelectedOptions = [...selectedOptions, { label, value: instruction }];
+    }
+    setSelectedOptions(newSelectedOptions);
     const newValue = `${input} ${instruction}`.trim();
     handleInputChange({ target: { value: newValue } });
 
@@ -156,7 +169,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
       const computed = window.getComputedStyle(textarea);
       const totalHeight = parseInt(computed.getPropertyValue('border-top-width'), 10)
         + parseInt(computed.getPropertyValue('padding-top'), 10)
-        + textarea.scrollHeight
+        + textarea.scrollHeight;
       textarea.style.height = `${totalHeight}px`;
     }
 
@@ -164,8 +177,11 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
     setTimeout(() => setInputAnimation(''), 300);
   };
 
+
   return (
     <div className="flex flex-col items-center py-9">
+      {console.log("selectedOptions", selectedOptions)}
+      {console.log("Label:", input)}
       <div className="p-1 w-full max-w-xl">
         <div className="p-2 bg-black rounded-lg shadow-lg relative">
           <form onSubmit={handleFormSubmit} className="relative flex flex-col justify-between h-full">
@@ -173,7 +189,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
               <Textarea
                 className={`${inputAnimation} pl-12 pr-16 min-h-14 overflow-hidden resize-none`}
                 placeholder="Imaginez..."
-                value={input}
+                value={selectedOptions.length > 0 ? selectedOptions.map(option => option.value).join(" ") : input}
                 onChange={(e) => {
                   handleInputChange(e);
                   handleInputHeight(e);
