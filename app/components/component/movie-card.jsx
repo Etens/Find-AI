@@ -102,6 +102,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
     setIsFlipped(!isFlipped);
   };
 
+  const backgroundImageUrl = backdropURL || posterURL;
 
   return (
     <div
@@ -123,7 +124,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
               { boxShadow: 'none', color: 'white' }
           }
         >
-          <div className="relative z-30 p-4 flex">
+          <div className="flex relative z-30 p-4 p-rigth-0">
             <div className="flex flex-col items-center justify-center">
               <img className="w-24 h-36 rounded shadow-lg" src={posterURL} alt={title} />
               <HoverBox className="mt-2 z-20" delay={100} openOnHover>
@@ -148,8 +149,10 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
               <p className="mt-4 text-gray-200 text-xs leading-relaxed max-w-lg">{description}</p>
             </div>
           </div>
-          <div className="absolute top-0 right-0 bottom-0 w-7/12 bg-cover bg-no-repeat bg-center rounded-lg overflow-hidden"
-            style={{ backgroundImage: `url(${backdropURL})` }}>
+          <div
+            className={`absolute top-0 right-0 bottom-0 w-[57%] overflow-hidden bg-cover mr-[-2%]`}
+            style={{ backgroundImage: `url(${backgroundImageUrl})` }}
+          >
             <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent mix-blend-multiply backdrop-filter backdrop-blur-sm"></div>
           </div>
         </div>
