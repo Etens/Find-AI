@@ -30,7 +30,7 @@ export function SearchOptions({ label, options, selectedOption, buttonIcon, onIn
       case "Emotion":
         return `provoquant une émotion de ${value.toLowerCase()}`;
       case "Popularité":
-        return `qui est ${value.toLowerCase()} populaire`;
+        return `qui est ${value.toLowerCase()}`;
       case "Décennie":
         return `sorti dans les ${value.toLowerCase()}`;
       case "Public":

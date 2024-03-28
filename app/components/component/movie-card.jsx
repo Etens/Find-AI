@@ -77,6 +77,7 @@ const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
 const MovieCard = ({ id, title, date, duration, emotion, description, posterURL, mainActors, explication, note, backdropURL }) => {
   const [dominantColor, setDominantColor] = useState('#ffffff');
   const [isColorLoaded, setIsColorLoaded] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
 
   useEffect(() => {
     if (backdropURL) {
@@ -97,6 +98,11 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
     boxShadow: '0 0 30px -15px white',
   };
 
+  const handleFlip = () => {
+    setIsFlipped(!isFlipped);
+  };
+
+
   return (
     <div
       className={`relative overflow-hidden rounded-lg w-full shadow-lg bg-black ${id}`}
@@ -108,41 +114,56 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
         e.currentTarget.style.boxShadow = '0 0 30px -15px white';
       }}
     >
-      <div className="relative z-30 p-4 flex">
-        <div className="flex flex-col items-center justify-center">
-          <img className="w-24 h-36 rounded shadow-lg" src={posterURL} alt={title} />
-          <HoverBox className="mt-2 z-20" delay={100} openOnHover>
-            <HoverBoxTrigger>
-              <FontAwesomeIcon icon={getEmotionIcon(emotion)} size="xs" className='mt-2' />
-            </HoverBoxTrigger>
-            <HoverBoxContent side="left" align="left">
-              <div
-                className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-4"
-                style={
-                  isColorLoaded ?
-                    { boxShadow: `0 0px 20px -10px ${dominantColor}`, color: 'white' } :
-                    { boxShadow: 'none', color: 'white' }
-                }
-              >
-                {emotion}
+      <div className={`flip-card-inner relative ${isFlipped ? 'flipped' : ''}`} onClick={handleFlip}>
+        <div
+          className="perspective m-auto"
+          style={
+            isColorLoaded ?
+              { boxShadow: `0 0px 20px -10px ${dominantColor}`, color: 'white' } :
+              { boxShadow: 'none', color: 'white' }
+          }
+        >
+          <div className="relative z-30 p-4 flex">
+            <div className="flex flex-col items-center justify-center">
+              <img className="w-24 h-36 rounded shadow-lg" src={posterURL} alt={title} />
+              <HoverBox className="mt-2 z-20" delay={100} openOnHover>
+                <HoverBoxTrigger>
+                  <FontAwesomeIcon icon={getEmotionIcon(emotion)} size="xs" className='mt-2' />
+                </HoverBoxTrigger>
+                <HoverBoxContent side="left" align="left">
+                  <div
+                    className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-4">
+                    {emotion}
+                  </div>
+                </HoverBoxContent>
+              </HoverBox>
+              <div className="text-gray-300 text-xs flex space-x-1">
+                {getRatingStars(note, explication, dominantColor, isColorLoaded)}
               </div>
-            </HoverBoxContent>
-          </HoverBox>
-          <div className="text-gray-300 text-xs flex space-x-1">
-            {getRatingStars(note, explication, dominantColor, isColorLoaded)}
+            </div>
+            <div className="ml-4 text-white">
+              <h1 className="text-2xl text-gray-200 font-bold">{title}</h1>
+              <h4 className="text-base text-gray-300 mt-2">{date} - {duration}</h4>
+              <p className="mt-4 text-xs text-gray-400">{mainActors}</p>
+              <p className="mt-4 text-gray-200 text-xs leading-relaxed max-w-lg">{description}</p>
+            </div>
+          </div>
+          <div className="absolute top-0 right-0 bottom-0 w-7/12 bg-cover bg-no-repeat bg-center rounded-lg overflow-hidden"
+            style={{ backgroundImage: `url(${backdropURL})` }}>
+            <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent mix-blend-multiply backdrop-filter backdrop-blur-sm"></div>
           </div>
         </div>
-        <div className="ml-4 text-white">
-          <h1 className="text-2xl text-gray-200 font-bold">{title}</h1>
-          <h4 className="text-base text-gray-300 mt-2">{date} - {duration}</h4>
-          <p className="mt-4 text-xs text-gray-400">{mainActors}</p>
-          <p className="mt-4 text-gray-200 text-xs leading-relaxed max-w-lg">{description}</p>
+        <div className="flip-card-back absolute inset-0 bg-black p-2 shadow-lg">
+          <div className="flex flex-col items-center justify-center h-full">
+            <h1 className="text-2xl text-gray-200 font-bold">{title}</h1>
+            <h4 className="text-base text-gray-300 mt-2">{date} - {duration}</h4>
+            <p className="mt-4 text-xs text-gray-400">{mainActors}</p>
+            <p className="mt-4 text-gray-200 text-xs leading-relaxed max-w-lg">{description}</p>
+          </div>
         </div>
-      </div>
-      <div className="absolute top-0 right-0 bottom-0 w-7/12 h-full bg-cover bg-no-repeat bg-center" style={{ backgroundImage: `url(${backdropURL})` }}>
-        <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent mix-blend-multiply backdrop-filter backdrop-blur-sm"></div>
       </div>
     </div>
   );
-}
+};
+
 export default MovieCard;
