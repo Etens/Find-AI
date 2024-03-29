@@ -16,8 +16,8 @@ export default function Video() {
         fill="white"
       />
       <NavBar />
-      <div className="flex flex-col bg-black/[0.96] antialiased bg-grid-white/[0.02] mt-20">
-        <div className=" p-4 max-w-7xl  mx-auto relative z-10  w-full pt-20 md:pt-0">
+      <div className="flex flex-col bg-black/[0.96] antialiased bg-grid-white/[0.02] mt-20 mb-40">
+        <div className=" p-4 max-w-7xl mx-auto relative z-10 w-full pt-20 md:pt-0">
           <h1 className="text-4xl md:text-7xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 bg-opacity-50">
             Find <br /> imaginez trouvez regardez
           </h1>
@@ -33,7 +33,7 @@ export default function Video() {
             movieDetailsMDb={movieDetailsMDb}
           />
         </div>
-        <div className="grid grid-cols-1 gap-8 mt-12 w-full">
+        <div className="grid grid-cols-1 gap-14 mt-11 w-full">
           {movieDetailsMDb
             .slice()
             .reverse()
@@ -50,6 +50,7 @@ export default function Video() {
                 duration={movie.duration}
                 mainActors={movie.mainActors}
                 date={movie.releaseDate}
+                movieTrailers={movie.movieTrailers}
               />
             ))}
         </div>

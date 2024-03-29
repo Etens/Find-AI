@@ -1,20 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faStar as fasStar,
-  faSmile,
-  faFaceGrinTears,
-  faFaceSadTear,
-  faFaceFlushed,
-  faPeoplePulling,
-  faFaceGrinHearts,
-  faBrain,
-  faHeartPulse,
-  faGrinStars,
-  faFire,
+  faStar as fasStar, faSmile, faFaceGrinTears, faFaceSadTear, faFaceFlushed, faPeoplePulling, faFaceGrinHearts, faBrain, faHeartPulse, faGrinStars, faFire,
 } from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import { HoverBox, HoverBoxContent, HoverBoxTrigger } from "../ui/hover-box";
@@ -70,14 +60,15 @@ const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
       </HoverBox>
     );
   }
-
   return stars;
 };
 
-const MovieCard = ({ id, title, date, duration, emotion, description, posterURL, mainActors, explication, note, backdropURL }) => {
+const MovieCard = ({ id, title, date, duration, emotion, description, posterURL, mainActors, explication, note, backdropURL, movieTrailers }) => {
   const [dominantColor, setDominantColor] = useState('#ffffff');
   const [isColorLoaded, setIsColorLoaded] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [trailerPlayed, setTrailerPlayed] = useState(false);
+  const iframeRef = useRef(null);
 
   useEffect(() => {
     if (backdropURL) {
@@ -101,6 +92,13 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
   };
+
+  useEffect(() => {
+    if (isFlipped && !trailerPlayed) {
+      iframeRef.current.src += "&autoplay=1"; // Lancer la lecture quand la carte est retournée
+      setTrailerPlayed(true); // Évite la relecture si la carte est retournée à nouveau
+    }
+  }, [isFlipped, trailerPlayed]);
 
   const backgroundImageUrl = backdropURL || posterURL;
 
@@ -156,15 +154,25 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
             <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent mix-blend-multiply backdrop-filter backdrop-blur-sm"></div>
           </div>
         </div>
-        <div className="flip-card-back absolute inset-0 bg-black p-2 shadow-lg">
-          <div className="flex flex-col items-center justify-center h-full">
-            <h1 className="text-2xl text-gray-200 font-bold">{title}</h1>
-            <h4 className="text-base text-gray-300 mt-2">{date} - {duration}</h4>
-            <p className="mt-4 text-xs text-gray-400">{mainActors}</p>
-            <p className="mt-4 text-gray-200 text-xs leading-relaxed max-w-lg">{description}</p>
-          </div>
-        </div>
-      </div>
+        <div className={`flip-card-back absolute inset-0 bg-black`}>
+          {isFlipped && (
+            <>
+              <iframe
+                ref={iframeRef}
+                className="absolute top-0 left-0 w-full h-full z-20"
+                src={`${movieTrailers}?rel=0&showinfo=0&modestbranding=1`}
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+                title="Movie Trailer"
+              ></iframe>
+              <div
+                className="absolute inset-0 flex items-center justify-center"
+                style={{ zIndex: 10 }} // S'assure que cette div est au-dessus de l'iframe
+                onClick={handleFlip}
+              ></div>
+            </>
+          )}
+        </div>      </div>
     </div>
   );
 };

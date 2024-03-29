@@ -1,7 +1,7 @@
 export async function GET(req) {
     try {
         const id = req.nextUrl.searchParams.get('id');
-        const language = req.nextUrl.searchParams.get('language') || 'fr-FR'; // Fournit une valeur par défaut si non spécifié
+        const language = req.nextUrl.searchParams.get('language') || 'en-US'; // Fournit une valeur par défaut si non spécifié
         const movieDetailsUrl = `https://api.themoviedb.org/3/movie/${id}?language=${language}&append_to_response=credits`;
 
         const response = await fetch(movieDetailsUrl, {

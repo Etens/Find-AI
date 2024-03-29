@@ -48,8 +48,6 @@ export function SearchOptions({ label, options, selectedOption, buttonIcon, onIn
   const handleOptionChange = (value) => {
     const newLabel = options.find((option) => option.value === value)?.label;
     const instruction = generateInstruction(label, newLabel);
-    console.log("instruction", instruction);
-    console.log("label", newLabel);
     onInstructionChange(instruction, label);
   };
 

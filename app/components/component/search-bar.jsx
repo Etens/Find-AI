@@ -17,6 +17,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
   const [inputAnimation, setInputAnimation] = useState("");
   const [showOptions, setShowOptions] = useState(true);
   const [selectedOptions, setSelectedOptions] = useState([]);
+  const [fetchOver, setFetchOver] = useState(false);
 
   useEffect(() => {
     let intervalId;
@@ -39,7 +40,6 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
       setProgressValue(100);
       setTimeout(() => setProgressValue(0), 1000);
     }
-
     return () => clearInterval(intervalId);
   }, [isLoading]);
 
@@ -72,6 +72,8 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
             if (movieDetails.id) {
               const movieDetailsResponse = await axios.get(`/api/movie/details?id=${movieDetails.id}&language=${language}`);
               const movieImagesResponse = await axios.get(`/api/movie/posters?id=${movieDetails.id}`);
+              const videosResponse = await axios.get(`/api/movie/trailers?id=${movieDetails.id}&language=${language}`);
+              const movieTrailers = videosResponse.data.trailerUrl;
               const movieImages = movieImagesResponse.data;
               const { poster_path, runtime } = movieDetailsResponse.data;
               const posterURL = `https://image.tmdb.org/t/p/original${poster_path}`;
@@ -85,6 +87,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
               const newMovieDetails = {
                 id,
                 posterURL,
+                movieTrailers,
                 duration,
                 mainActors,
                 backdropURL: movieImages.backdropUrl,
@@ -98,7 +101,11 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
               };
 
               setMovieDetailsMDb((prevMovies) => [...prevMovies.filter((movie) => movie.id !== id), newMovieDetails]);
-              console.log("Détails du film récupérés:", newMovieDetails);
+              console.log("Trailers response:", movieTrailers);
+              setFetchOver(true);
+              setTimeout(() => {
+                setFetchOver(false);
+              }, 4000);
             }
           } else {
             console.log("Aucun film trouvé correspondant au critère.");
@@ -177,11 +184,8 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
     setTimeout(() => setInputAnimation(''), 300);
   };
 
-
   return (
-    <div className="flex flex-col items-center py-9">
-      {console.log("selectedOptions", selectedOptions)}
-      {console.log("Label:", input)}
+    <div className="flex flex-col items-center pt-9">
       <div className="p-1 w-full max-w-xl">
         <div className="p-2 bg-black rounded-lg shadow-lg relative">
           <form onSubmit={handleFormSubmit} className="relative flex flex-col justify-between h-full">
@@ -215,7 +219,9 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
         </div>
         <SearchOptionsList handleOptionChange={handleOptionChange} showOptions={showOptions} setShowOptions={setShowOptions} />
       </div>
-      {isLoading && <Progress value={progressValue} />}
+      {!fetchOver && isLoading && (
+        <Progress value={progressValue} />
+      )}
     </div>
   );
 }
