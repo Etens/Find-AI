@@ -70,6 +70,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
   const [trailerPlayed, setTrailerPlayed] = useState(false);
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const [hoverShadow, setHoverShadow] = useState('0 0 30px -15px white');
+  const [mainDivClassNames, setMainDivClassNames] = useState(`relative rounded-lg w-full shadow-lg bg-black ${id}`);
 
   const iframeRef = useRef(null);
 
@@ -106,19 +107,19 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
+    setMainDivClassNames(`relative overflow-hidden rounded-lg w-full shadow-lg bg-black h-[24rem] ${id}`);
   };
-
-  const mainDivClassNames = `relative overflow-hidden rounded-lg w-full shadow-lg bg-black ${isFlipped ? 'h-[24rem]' : ''} ${id}`;
 
   useEffect(() => {
     if (isFlipped) {
       setIframeLoaded(false);
-
       const newSrc = `${movieTrailers}?rel=0&showinfo=0&modestbranding=1&autoplay=${isFlipped ? 1 : 0}`;
       iframeRef.current.src = newSrc;
       setTrailerPlayed(isFlipped);
+    } else {
+      setMainDivClassNames(`relative rounded-lg w-full shadow-lg bg-black ${id}`);
     }
-  }, [isFlipped, movieTrailers]);
+  }, [isFlipped]);
 
   useEffect(() => {
     if (isFlipped && !trailerPlayed) {
@@ -137,7 +138,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
 
   useEffect(() => {
     if (trailerPlayed) {
-      setHoverShadow(`0 0 60px -15px ${dominantColor}`);
+      setHoverShadow(`0 0 80px -30px ${dominantColor}`);
     } else {
       setHoverShadow(hoverShadow);
     }
@@ -148,7 +149,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
 
   return (
     <div
-      className={mainDivClassNames}
+      className={`${mainDivClassNames} transition-height duration-500 ease-in-out`}
       style={cardStyle}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -162,10 +163,10 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
               { hoverShadow: 'none', color: 'white' }
           }
         >
-          <div className="flex relative z-30 p-4 p-rigth-0">
+          <div className="flex relative p-4 p-rigth-0">
             <div className="flex flex-col items-center justify-center">
               <img className="w-24 h-36 rounded shadow-lg" src={posterURL} alt={title} />
-              <HoverBox className="mt-2 z-20" delay={100} openOnHover>
+              <HoverBox className="mt-2" delay={100} openOnHover>
                 <HoverBoxTrigger>
                   <FontAwesomeIcon icon={getEmotionIcon(emotion)} size="xs" className='mt-2' />
                 </HoverBoxTrigger>
@@ -197,12 +198,15 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
         <div className={`flip-card-back absolute inset-0 bg-black`}>
           {isFlipped && (
             <>
-            {/* display loader */}
               <div
                 className={`absolute inset-0 flex items-center justify-center ${iframeLoaded ? 'hidden' : 'block'}`}
               >
                 <FontAwesomeIcon icon={faFaceGrinTears} size="3x" spin className="text-white" />
               </div>
+              <div
+                className="absolute inset-0 flex items-center justify-center z-10"
+                onClick={handleFlip}
+              ></div>
               <iframe
                 ref={iframeRef}
                 className={`custom-ratio ${iframeLoaded ? 'block' : 'hidden'}`}
@@ -213,11 +217,6 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                 sandbox='allow-same-origin allow-scripts allow-popups allow-forms'
                 onLoad={handleIframeLoad}
               ></iframe>
-              <div
-                className="absolute inset-0 flex items-center justify-center"
-                style={{ zIndex: 10 }}
-                onClick={handleFlip}
-              ></div>
             </>
           )}
         </div>
