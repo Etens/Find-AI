@@ -106,6 +106,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
                 note: message["Réputation Web"] || message["Reputation Web"],
                 explication: message["Explication"],
                 language: message["Langue du prompt"],
+                origin : message["Origine"],
               };
 
               setMovieDetailsMDb((prevMovies) => [...prevMovies.filter((movie) => movie.id !== id), newMovieDetails]);

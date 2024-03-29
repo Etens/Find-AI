@@ -64,7 +64,7 @@ const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
   return stars;
 };
 
-const MovieCard = ({ id, title, date, duration, emotion, description, posterURL, explication, note, backdropURL, movieTrailers, actorImages }) => {
+const MovieCard = ({ id, title, date, duration, emotion, description, posterURL, explication, note, backdropURL, movieTrailers, actorImages, origin }) => {
   const [dominantColor, setDominantColor] = useState('#ffffff');
   const [isColorLoaded, setIsColorLoaded] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -184,7 +184,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
             </div>
             <div className="ml-4 text-white">
               <h1 className="text-2xl text-gray-200 font-bold">{title}</h1>
-              <h4 className="text-base text-gray-300 mt-3">{date} - {duration}</h4>
+              <h4 className="text-base text-gray-300 mt-3">{date} - {duration} - {origin}</h4>
               <p className="mt-3 text-gray-200 text-xs leading-relaxed max-w-lg">{description}</p>
               <div className="mt-4">
                 {actorImages.map((actor, index) => (

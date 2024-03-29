@@ -24,7 +24,8 @@ const instructionMessage = {
         `Emotion - ${aiInstructionsData.instructions.structure.emotion}\n` +
         `Date de sortie - ${aiInstructionsData.instructions.structure.release_date}\n` +
         `Priorité: ${aiInstructionsData.priority}\n` +
-        `Qualité: ${aiInstructionsData.quality}`
+        `Qualité: ${aiInstructionsData.quality}\n` +
+        `Origine: ${aiInstructionsData.instructions.structure.origin}`
 };
 
 export async function POST(req) {

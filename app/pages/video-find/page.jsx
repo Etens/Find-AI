@@ -52,6 +52,7 @@ export default function Video() {
                 actorImages={movie.actorImages}
                 date={movie.releaseDate}
                 movieTrailers={movie.movieTrailers}
+                origin={movie.origin}
               />
             ))}
         </div>
