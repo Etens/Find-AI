@@ -24,7 +24,7 @@ const HoverBoxContent = React.forwardRef(
         " dark:border-gray-800 dark:bg-dark-500 dark:text-gray-50" +
         (className ? ` ${className}` : "")
       }
-      side="top"
+      side="top" 
       {...props}
     />
   )

@@ -25,6 +25,7 @@ const getEmotionIcon = (emotion) => {
 };
 
 const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
+  const [hovered, setHovered] = useState(false);
   let stars = [];
   let rating;
 
@@ -37,22 +38,22 @@ const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
     default: rating = 0;
   }
 
+  const starStyles = hovered ? { color: 'white' } : {};
+
   for (let i = 0; i < 5; i++) {
     stars.push(
       <HoverBox key={`hover-${i}`} delay={100} openOnHover>
-        <HoverBoxTrigger>
-          {i < rating ?
-            <FontAwesomeIcon icon={fasStar} size="xs" /> :
-            <FontAwesomeIcon icon={farStar} size="xs" />}
+        <HoverBoxTrigger
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{ cursor: 'pointer', ...starStyles }}
+        >
+          <FontAwesomeIcon icon={i < rating ? fasStar : farStar} size="xs" />
         </HoverBoxTrigger>
         <HoverBoxContent side="left" align="left">
           <div
             className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-4 z-10"
-            style={
-              isColorLoaded ?
-                { boxShadow: `0 0px 30px -15px ${dominantColor}`, color: 'white' } :
-                { boxShadow: 'none', color: 'white' }
-            }
+            style={isColorLoaded ? { boxShadow: `0 0px 30px -15px ${dominantColor}`, color: 'white' } : {}}
           >
             {explication}
           </div>
@@ -63,7 +64,7 @@ const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
   return stars;
 };
 
-const MovieCard = ({ id, title, date, duration, emotion, description, posterURL, mainActors, explication, note, backdropURL, movieTrailers }) => {
+const MovieCard = ({ id, title, date, duration, emotion, description, posterURL, explication, note, backdropURL, movieTrailers, actorImages }) => {
   const [dominantColor, setDominantColor] = useState('#ffffff');
   const [isColorLoaded, setIsColorLoaded] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -163,14 +164,14 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
               { hoverShadow: 'none', color: 'white' }
           }
         >
-          <div className="flex relative p-4 p-rigth-0">
+          <div className="flex relative p-4 p-rigth-0 z-30">
             <div className="flex flex-col items-center justify-center">
               <img className="w-24 h-36 rounded shadow-lg" src={posterURL} alt={title} />
-              <HoverBox className="mt-2" delay={100} openOnHover>
-                <HoverBoxTrigger>
-                  <FontAwesomeIcon icon={getEmotionIcon(emotion)} size="xs" className='mt-2' />
+              <HoverBox delay={100} openOnHover className="mt-2">
+                <HoverBoxTrigger className="text-sm text-gray-300 hover:text-white cursor-pointer">
+                  <FontAwesomeIcon icon={getEmotionIcon(emotion)} size="xs" className='mt-2 w-4 h-4' />
                 </HoverBoxTrigger>
-                <HoverBoxContent side="left" align="left">
+                <HoverBoxContent side="left" align="left" className="w-32">
                   <div
                     className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-4">
                     {emotion}
@@ -183,9 +184,26 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
             </div>
             <div className="ml-4 text-white">
               <h1 className="text-2xl text-gray-200 font-bold">{title}</h1>
-              <h4 className="text-base text-gray-300 mt-2">{date} - {duration}</h4>
-              <p className="mt-4 text-xs text-gray-400">{mainActors}</p>
-              <p className="mt-4 text-gray-200 text-xs leading-relaxed max-w-lg">{description}</p>
+              <h4 className="text-base text-gray-300 mt-3">{date} - {duration}</h4>
+              <p className="mt-3 text-gray-200 text-xs leading-relaxed max-w-lg">{description}</p>
+              <div className="mt-4">
+                {actorImages.map((actor, index) => (
+                  <HoverBox key={index} delay={100} openOnHover>
+                    <HoverBoxTrigger className="text-xs text-gray-300 hover:text-white cursor-pointer mr-2">
+                      {actor.name}
+                    </HoverBoxTrigger>
+                    <HoverBoxContent side="bottom" align="start" sideOffset={-4}>
+                      <img
+                        className="rounded object-cover shadow-lg h-auto w-14"
+                        src={actor.imageUrl}
+                        alt={actor.name}
+                        // add drop-shadow to the image for better visibility with dominant color
+                        style={isColorLoaded ? { filter: `drop-shadow(0 0 10px ${dominantColor})` } : {}}
+                      />
+                    </HoverBoxContent>
+                  </HoverBox>
+                ))}
+              </div>
             </div>
           </div>
           <div

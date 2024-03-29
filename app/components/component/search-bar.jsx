@@ -73,6 +73,13 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
               const movieDetailsResponse = await axios.get(`/api/movie/details?id=${movieDetails.id}&language=${language}`);
               const movieImagesResponse = await axios.get(`/api/movie/posters?id=${movieDetails.id}`);
               const videosResponse = await axios.get(`/api/movie/trailers?id=${movieDetails.id}&language=${language}`);
+              const movieCreditsResponse = await axios.get(`/api/movie/credits?id=${movieDetails.id}&language=${language}`);
+              const actorImages = movieCreditsResponse.data.cast.slice(0, 5).map(actor => {
+                return {
+                  name: actor.name,
+                  imageUrl: `https://image.tmdb.org/t/p/w500${actor.profile_path}`
+                };
+              });
               const movieTrailers = videosResponse.data.trailerUrl;
               const movieImages = movieImagesResponse.data;
               const { poster_path, runtime } = movieDetailsResponse.data;
@@ -90,6 +97,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
                 movieTrailers,
                 duration,
                 mainActors,
+                actorImages,
                 backdropURL: movieImages.backdropUrl,
                 releaseDate: message["Date de sortie"],
                 title: message["Titre"],
@@ -102,6 +110,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
 
               setMovieDetailsMDb((prevMovies) => [...prevMovies.filter((movie) => movie.id !== id), newMovieDetails]);
               console.log("Trailers response:", movieTrailers);
+              console.log("Images Actor:", actorImages);
               setFetchOver(true);
               setTimeout(() => {
                 setFetchOver(false);

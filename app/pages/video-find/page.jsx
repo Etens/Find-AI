@@ -49,6 +49,7 @@ export default function Video() {
                 backdropURL={movie.backdropURL}
                 duration={movie.duration}
                 mainActors={movie.mainActors}
+                actorImages={movie.actorImages}
                 date={movie.releaseDate}
                 movieTrailers={movie.movieTrailers}
               />
