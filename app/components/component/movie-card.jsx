@@ -68,6 +68,9 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
   const [isColorLoaded, setIsColorLoaded] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
   const [trailerPlayed, setTrailerPlayed] = useState(false);
+  const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [hoverShadow, setHoverShadow] = useState('0 0 30px -15px white');
+
   const iframeRef = useRef(null);
 
   useEffect(() => {
@@ -84,42 +87,79 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
     }
   }, [backdropURL]);
 
+  const handleMouseEnter = () => {
+    if (!trailerPlayed) {
+      setHoverShadow(`0 0 60px -15px ${dominantColor}`);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!trailerPlayed) {
+      setHoverShadow('0 0 30px -15px white');
+    }
+  };
+
   const cardStyle = {
     transition: 'box-shadow 0.5s ease',
-    boxShadow: '0 0 30px -15px white',
+    boxShadow: hoverShadow,
   };
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
   };
 
+  const mainDivClassNames = `relative overflow-hidden rounded-lg w-full shadow-lg bg-black ${isFlipped ? 'h-[24rem]' : ''} ${id}`;
+
+  useEffect(() => {
+    if (isFlipped) {
+      setIframeLoaded(false);
+
+      const newSrc = `${movieTrailers}?rel=0&showinfo=0&modestbranding=1&autoplay=${isFlipped ? 1 : 0}`;
+      iframeRef.current.src = newSrc;
+      setTrailerPlayed(isFlipped);
+    }
+  }, [isFlipped, movieTrailers]);
+
   useEffect(() => {
     if (isFlipped && !trailerPlayed) {
-      iframeRef.current.src += "&autoplay=1"; // Lancer la lecture quand la carte est retournée
-      setTrailerPlayed(true); // Évite la relecture si la carte est retournée à nouveau
+      iframeRef.current.src += "&autoplay=1";
+      setTrailerPlayed(true);
+    } else if (!isFlipped && trailerPlayed) {
+      setTrailerPlayed(false);
     }
   }, [isFlipped, trailerPlayed]);
+
+  const handleIframeLoad = () => {
+    setTimeout(() => {
+      setIframeLoaded(true);
+    }, 2000);
+  };
+
+  useEffect(() => {
+    if (trailerPlayed) {
+      setHoverShadow(`0 0 60px -15px ${dominantColor}`);
+    } else {
+      setHoverShadow(hoverShadow);
+    }
+  }, [trailerPlayed, dominantColor, hoverShadow]);
+
 
   const backgroundImageUrl = backdropURL || posterURL;
 
   return (
     <div
-      className={`relative overflow-hidden rounded-lg w-full shadow-lg bg-black ${id}`}
+      className={mainDivClassNames}
       style={cardStyle}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = isColorLoaded ? `0 0 60px -15px ${dominantColor}` : `0 0 60px -15px white`;
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = '0 0 30px -15px white';
-      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      <div className={`flip-card-inner relative ${isFlipped ? 'flipped' : ''}`} onClick={handleFlip}>
+      <div className={`flip-card-inner relative h-full ${isFlipped ? 'flipped' : ''}`} onClick={handleFlip}>
         <div
           className="perspective m-auto"
           style={
             isColorLoaded ?
-              { boxShadow: `0 0px 20px -10px ${dominantColor}`, color: 'white' } :
-              { boxShadow: 'none', color: 'white' }
+              { hoverShadow: `0 0px 20px -10px ${dominantColor}`, color: 'white' } :
+              { hoverShadow: 'none', color: 'white' }
           }
         >
           <div className="flex relative z-30 p-4 p-rigth-0">
@@ -148,7 +188,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
             </div>
           </div>
           <div
-            className={`absolute top-0 right-0 bottom-0 w-[57%] overflow-hidden bg-cover mr-[-2%]`}
+            className={`absolute top-0 right-0 bottom-0 w-[57%] overflow-hidden bg-cover mr-[-10%]`}
             style={{ backgroundImage: `url(${backgroundImageUrl})` }}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent mix-blend-multiply backdrop-filter backdrop-blur-sm"></div>
@@ -157,22 +197,31 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
         <div className={`flip-card-back absolute inset-0 bg-black`}>
           {isFlipped && (
             <>
+            {/* display loader */}
+              <div
+                className={`absolute inset-0 flex items-center justify-center ${iframeLoaded ? 'hidden' : 'block'}`}
+              >
+                <FontAwesomeIcon icon={faFaceGrinTears} size="3x" spin className="text-white" />
+              </div>
               <iframe
                 ref={iframeRef}
-                className="absolute top-0 left-0 w-full h-full z-20"
+                className={`custom-ratio ${iframeLoaded ? 'block' : 'hidden'}`}
                 src={`${movieTrailers}?rel=0&showinfo=0&modestbranding=1`}
                 allow="autoplay; encrypted-media"
                 allowFullScreen
                 title="Movie Trailer"
+                sandbox='allow-same-origin allow-scripts allow-popups allow-forms'
+                onLoad={handleIframeLoad}
               ></iframe>
               <div
                 className="absolute inset-0 flex items-center justify-center"
-                style={{ zIndex: 10 }} // S'assure que cette div est au-dessus de l'iframe
+                style={{ zIndex: 10 }}
                 onClick={handleFlip}
               ></div>
             </>
           )}
-        </div>      </div>
+        </div>
+      </div>
     </div>
   );
 };

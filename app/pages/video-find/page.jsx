@@ -33,7 +33,7 @@ export default function Video() {
             movieDetailsMDb={movieDetailsMDb}
           />
         </div>
-        <div className="grid grid-cols-1 gap-14 mt-11 w-full">
+        <div className="grid grid-cols-1 gap-14 mt-11 w-full h-full p-4">
           {movieDetailsMDb
             .slice()
             .reverse()
