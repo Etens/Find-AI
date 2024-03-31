@@ -148,6 +148,17 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
 
   const backgroundImageUrl = backdropURL || posterURL;
 
+  const shadeColor = (color, percent) => {
+    var num = parseInt(color.slice(1), 16),
+      amt = Math.round(2.55 * percent),
+      R = (num >> 16) + amt,
+      G = (num >> 8 & 0x00FF) + amt,
+      B = (num & 0x0000FF) + amt;
+
+    return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+  };
+
+
   return (
     <div
       className={`${mainDivClassNames} transition-height duration-500 ease-in-out`}
@@ -197,7 +208,6 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                         className="rounded object-cover shadow-lg h-auto w-14"
                         src={actor.imageUrl}
                         alt={actor.name}
-                        // add drop-shadow to the image for better visibility with dominant color
                         style={isColorLoaded ? { filter: `drop-shadow(0 0 10px ${dominantColor})` } : {}}
                       />
                     </HoverBoxContent>
@@ -216,10 +226,20 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
         <div className={`flip-card-back absolute inset-0 bg-black`}>
           {isFlipped && (
             <>
-              <div
-                className={`absolute inset-0 flex items-center justify-center ${iframeLoaded ? 'hidden' : 'block'}`}
-              >
-                <FontAwesomeIcon icon={faFaceGrinTears} size="3x" spin className="text-white" />
+              <div className="absolute inset-0 flex items-center justify-center z-10">
+                {iframeLoaded ? null : <div className="flex justify-center items-center h-screen">
+                  <div className="relative w-14 h-14 animate-spin rounded-full"
+                    style={{
+                      filter: `drop-shadow(0 0 10px ${dominantColor})`,
+                      background: `linear-gradient(to right, 
+                          ${shadeColor(dominantColor, -10)}, 
+                          ${dominantColor}, 
+                          ${shadeColor(dominantColor, 10)})`
+                    }}>
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-black rounded-full"></div>
+                  </div>
+                </div>
+                }
               </div>
               <div
                 className="absolute inset-0 flex items-center justify-center z-10"

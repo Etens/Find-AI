@@ -73,6 +73,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
               const movieDetailsResponse = await axios.get(`/api/movie/details?id=${movieDetails.id}&language=${language}`);
               const movieImagesResponse = await axios.get(`/api/movie/posters?id=${movieDetails.id}`);
               const videosResponse = await axios.get(`/api/movie/trailers?id=${movieDetails.id}&language=${language}`);
+              const streamingProvidersResponse = await axios.get(`/api/movie/streaming?id=${movieDetails.id}`);
               const movieCreditsResponse = await axios.get(`/api/movie/credits?id=${movieDetails.id}&language=${language}`);
               const actorImages = movieCreditsResponse.data.cast.slice(0, 5).map(actor => {
                 return {
@@ -90,6 +91,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
                 .map((actor) => actor.name)
                 .join(", ");
               const id = movieDetailsResponse.data.id;
+              const streaming = streamingProvidersResponse.data.results.FR;
 
               const newMovieDetails = {
                 id,
@@ -106,12 +108,13 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
                 note: message["Réputation Web"] || message["Reputation Web"],
                 explication: message["Explication"],
                 language: message["Langue du prompt"],
-                origin : message["Origine"],
+                origin: message["Origine"],
               };
 
               setMovieDetailsMDb((prevMovies) => [...prevMovies.filter((movie) => movie.id !== id), newMovieDetails]);
               console.log("Trailers response:", movieTrailers);
               console.log("Images Actor:", actorImages);
+              console.log("Streaming Providers:", streaming);
               setFetchOver(true);
               setTimeout(() => {
                 setFetchOver(false);
@@ -166,30 +169,26 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
 
   const handleOptionChange = (instruction, label) => {
     const existingOptionIndex = selectedOptions.findIndex((option) => option.label === label);
-  
+
     let updatedInput = input;
-  
+
     if (existingOptionIndex !== -1) {
-      // Supprimez l'ancienne valeur de cette option de l'input
       updatedInput = updatedInput.replace(new RegExp("\\b" + selectedOptions[existingOptionIndex].value + "\\b", 'g'), '').trim();
-  
-      // Remplacez l'option par la nouvelle dans la liste des options sélectionnées
-      const updatedOptions = selectedOptions.map((option, index) => 
+
+      const updatedOptions = selectedOptions.map((option, index) =>
         index === existingOptionIndex ? { label, value: instruction } : option
       );
       setSelectedOptions(updatedOptions);
-  
-      // Ajoutez la nouvelle option à l'input
+
       updatedInput = `${updatedInput} ${instruction}`.trim();
     } else {
-      // Ajoutez la nouvelle option à l'input et à la liste des options sélectionnées
       updatedInput = `${updatedInput} ${instruction}`.trim();
       setSelectedOptions([...selectedOptions, { label, value: instruction }]);
     }
-  
+
     handleInputChange({ target: { value: updatedInput } });
   };
-  
+
   return (
     <div className="flex flex-col items-center pt-9">
       <div className="p-1 w-full max-w-xl">
