@@ -1,9 +1,8 @@
 export async function GET(req) {
     try {
       const id = req.nextUrl.searchParams.get('id');
-      const language = req.nextUrl.searchParams.get('language') || 'en-US'; // Valeur par défaut si non spécifié
+      const language = req.nextUrl.searchParams.get('language') || 'en-US'; 
   
-      // Utilisez l'endpoint de crédits TMDB pour obtenir des informations sur le casting et l'équipe
       const creditsUrl = `https://api.themoviedb.org/3/movie/${id}/credits?language=${language}`;
   
       const response = await fetch(creditsUrl, {

@@ -144,9 +144,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && e.shiftKey) {
       e.preventDefault();
-      const value = e.target.value;
-      const selectionStart = e.target.selectionStart;
-      const selectionEnd = e.target.selectionEnd;
+      const { value, selectionStart, selectionEnd } = e.target;
       handleInputChange({
         target: {
           value: value.slice(0, selectionStart) + "\n" + value.slice(selectionEnd),
@@ -158,6 +156,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
     } else if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
+      clearInput();
     }
   };
 
@@ -166,44 +165,44 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
   };
 
   const handleOptionChange = (instruction, label) => {
-    const existingIndex = selectedOptions.findIndex(option => option.label === label);
-
-    let newSelectedOptions;
-    if (existingIndex !== -1) {
-      newSelectedOptions = selectedOptions.map((option, index) =>
-        index === existingIndex ? { label, value: instruction } : option
+    const existingOptionIndex = selectedOptions.findIndex((option) => option.label === label);
+  
+    let updatedInput = input;
+  
+    if (existingOptionIndex !== -1) {
+      // Supprimez l'ancienne valeur de cette option de l'input
+      updatedInput = updatedInput.replace(new RegExp("\\b" + selectedOptions[existingOptionIndex].value + "\\b", 'g'), '').trim();
+  
+      // Remplacez l'option par la nouvelle dans la liste des options sélectionnées
+      const updatedOptions = selectedOptions.map((option, index) => 
+        index === existingOptionIndex ? { label, value: instruction } : option
       );
+      setSelectedOptions(updatedOptions);
+  
+      // Ajoutez la nouvelle option à l'input
+      updatedInput = `${updatedInput} ${instruction}`.trim();
     } else {
-      newSelectedOptions = [...selectedOptions, { label, value: instruction }];
+      // Ajoutez la nouvelle option à l'input et à la liste des options sélectionnées
+      updatedInput = `${updatedInput} ${instruction}`.trim();
+      setSelectedOptions([...selectedOptions, { label, value: instruction }]);
     }
-    setSelectedOptions(newSelectedOptions);
-    const newValue = `${input} ${instruction}`.trim();
-    handleInputChange({ target: { value: newValue } });
-
-    const textarea = document.querySelector(".pl-12");
-    if (textarea) {
-      textarea.style.height = "inherit";
-      const computed = window.getComputedStyle(textarea);
-      const totalHeight = parseInt(computed.getPropertyValue('border-top-width'), 10)
-        + parseInt(computed.getPropertyValue('padding-top'), 10)
-        + textarea.scrollHeight;
-      textarea.style.height = `${totalHeight}px`;
-    }
-
-    setInputAnimation('animate-flash');
-    setTimeout(() => setInputAnimation(''), 300);
+  
+    handleInputChange({ target: { value: updatedInput } });
   };
-
+  
   return (
     <div className="flex flex-col items-center pt-9">
       <div className="p-1 w-full max-w-xl">
         <div className="p-2 bg-black rounded-lg shadow-lg relative">
           <form onSubmit={handleFormSubmit} className="relative flex flex-col justify-between h-full">
+            {console.log("Selected Options:", selectedOptions)}
+            {console.log("Input:", input)}
+            {console.log("Messages:", messages)}
             <div className="w-full">
               <Textarea
                 className={`${inputAnimation} pl-12 pr-16 min-h-14 overflow-hidden resize-none`}
                 placeholder="Imaginez..."
-                value={selectedOptions.length > 0 ? selectedOptions.map(option => option.value).join(" ") : input}
+                value={input}
                 onChange={(e) => {
                   handleInputChange(e);
                   handleInputHeight(e);

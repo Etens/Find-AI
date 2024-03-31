@@ -64,7 +64,7 @@ export function SearchOptions({ label, options, selectedOption, buttonIcon, onIn
       <DropdownMenuContent>
         <DropdownMenuRadioGroup value={selectedOption} onValueChange={(value) => handleOptionChange(value)}>
           {options.map((option) => (
-            <DropdownMenuRadioItem value={option.value} key={option.value}>
+            <DropdownMenuRadioItem value={option.value} key={option.value} disabled={option.disabled}>
               {option.label}
             </DropdownMenuRadioItem>
           ))}

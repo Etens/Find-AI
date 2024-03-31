@@ -33,10 +33,10 @@ const SearchOptionsList = ({ handleOptionChange, showOptions, setShowOptions }) 
                     label="Type de Médias"
                     options={[
                         { value: "film", label: "Film" },
-                        { value: "series", label: "Série" },
-                        { value: "documentary", label: "Documentaire" },
                         { value: "annimation", label: "Film d'Animation" },
-                        { value: "anime", label: "Animé" },
+                        { value: "documentary", label: "Documentaire" },
+                        { value: "series", label: "Série", disabled: true },
+                        { value: "anime", label: "Animé", disabled: true },
                     ]}
                     buttonIcon={iconMedia}
                     onInstructionChange={handleMediaTypeChange}
