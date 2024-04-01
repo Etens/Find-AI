@@ -53,6 +53,7 @@ export default function Video() {
                 date={movie.releaseDate}
                 movieTrailers={movie.movieTrailers}
                 origin={movie.origin}
+                movieStreamings={movie.movieStreamings}
               />
             ))}
         </div>

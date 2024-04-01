@@ -60,7 +60,6 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
         .filter((content) => content !== null);
 
       setAssistantContent(filteredAndParsedMessages);
-      console.log("Messages de l'assistant filtrés et parsés:", filteredAndParsedMessages);
 
       filteredAndParsedMessages.forEach(async (message) => {
         try {
@@ -68,20 +67,21 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
 
           if (response.data.results.length > 0) {
             const movieDetails = response.data.results.find((movie) => movie.release_date.startsWith(message["Date de sortie"]));
+            console.log("Movie Details:", movieDetails);
 
             if (movieDetails.id) {
               const movieDetailsResponse = await axios.get(`/api/movie/details?id=${movieDetails.id}&language=${language}`);
               const movieImagesResponse = await axios.get(`/api/movie/posters?id=${movieDetails.id}`);
-              const videosResponse = await axios.get(`/api/movie/trailers?id=${movieDetails.id}&language=${language}`);
-              const streamingProvidersResponse = await axios.get(`/api/movie/streaming?id=${movieDetails.id}`);
+              const movieTrailersResponse = await axios.get(`/api/movie/trailers?id=${movieDetails.id}&language=${language}`);
               const movieCreditsResponse = await axios.get(`/api/movie/credits?id=${movieDetails.id}&language=${language}`);
+              const movieStreamingsResponse = await axios.post("/api/movie/streaming?title=" + movieDetails.title + "&mediaType=movie");
               const actorImages = movieCreditsResponse.data.cast.slice(0, 5).map(actor => {
                 return {
                   name: actor.name,
                   imageUrl: `https://image.tmdb.org/t/p/w500${actor.profile_path}`
                 };
               });
-              const movieTrailers = videosResponse.data.trailerUrl;
+              const movieTrailers = movieTrailersResponse.data.trailerUrl;
               const movieImages = movieImagesResponse.data;
               const { poster_path, runtime } = movieDetailsResponse.data;
               const posterURL = `https://image.tmdb.org/t/p/original${poster_path}`;
@@ -91,7 +91,8 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
                 .map((actor) => actor.name)
                 .join(", ");
               const id = movieDetailsResponse.data.id;
-              const streaming = streamingProvidersResponse.data.results.FR;
+              const movieStreamings = movieStreamingsResponse.data;
+              console.log("Movie Streamings:", movieStreamings);
 
               const newMovieDetails = {
                 id,
@@ -109,12 +110,10 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
                 explication: message["Explication"],
                 language: message["Langue du prompt"],
                 origin: message["Origine"],
+                movieStreamings,
               };
 
               setMovieDetailsMDb((prevMovies) => [...prevMovies.filter((movie) => movie.id !== id), newMovieDetails]);
-              console.log("Trailers response:", movieTrailers);
-              console.log("Images Actor:", actorImages);
-              console.log("Streaming Providers:", streaming);
               setFetchOver(true);
               setTimeout(() => {
                 setFetchOver(false);
@@ -194,9 +193,6 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
       <div className="p-1 w-full max-w-xl">
         <div className="p-2 bg-black rounded-lg shadow-lg relative">
           <form onSubmit={handleFormSubmit} className="relative flex flex-col justify-between h-full">
-            {console.log("Selected Options:", selectedOptions)}
-            {console.log("Input:", input)}
-            {console.log("Messages:", messages)}
             <div className="w-full">
               <Textarea
                 className={`${inputAnimation} pl-12 pr-16 min-h-14 overflow-hidden resize-none`}

@@ -64,7 +64,7 @@ const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
   return stars;
 };
 
-const MovieCard = ({ id, title, date, duration, emotion, description, posterURL, explication, note, backdropURL, movieTrailers, actorImages, origin }) => {
+const MovieCard = ({ id, title, date, duration, emotion, description, posterURL, explication, note, backdropURL, movieTrailers, actorImages, origin, movieStreamings }) => {
   const [dominantColor, setDominantColor] = useState('#ffffff');
   const [isColorLoaded, setIsColorLoaded] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -176,7 +176,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
           }
         >
           <div className="flex relative p-4 p-rigth-0 z-30">
-            <div className="flex flex-col items-center justify-center">
+            <div className="flex flex-col items-center justify-center mb-6">
               <img className="w-24 h-36 rounded shadow-lg" src={posterURL} alt={title} />
               <HoverBox delay={100} openOnHover className="mt-2">
                 <HoverBoxTrigger className="text-sm text-gray-300 hover:text-white cursor-pointer">
@@ -213,6 +213,31 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                     </HoverBoxContent>
                   </HoverBox>
                 ))}
+              </div>
+              <div className="flex justify-center mt-4">
+                {movieStreamings ? movieStreamings.map((streaming, index) => (
+                  <HoverBox key={index} delay={100} openOnHover>
+                    <HoverBoxTrigger className="text-xs text-gray-300 hover:text-white cursor-pointer mr-2">
+                      <a href={streaming.WatchUrl} target="_blank" rel="noopener noreferrer">
+                        <img
+                          className="w-8 h-8 object-cover rounded-lg shadow-lg"
+                          src={streaming.Company.LogoUrl}
+                          alt={streaming.Company.Name}
+                          style={{ boxShadow: getDropShadow(dominantColor) }}
+                        />
+                      </a>
+                    </HoverBoxTrigger>
+                    <HoverBoxContent side="bottom" align="start" sideOffset={5}>
+                      <div
+                        className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-4"
+                        style={{ boxShadow: getDropShadow(dominantColor) }}
+                      >
+                        <strong>{streaming.Company.Name}</strong>
+                        <p>{streaming.Company.Description}</p>
+                      </div>
+                    </HoverBoxContent>
+                  </HoverBox>
+                )) : null}
               </div>
             </div>
           </div>
