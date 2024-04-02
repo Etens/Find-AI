@@ -18,6 +18,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
   const [showOptions, setShowOptions] = useState(true);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [fetchOver, setFetchOver] = useState(false);
+  const [country, setCountry] = useState("US");
 
   useEffect(() => {
     let intervalId;
@@ -42,6 +43,18 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
     }
     return () => clearInterval(intervalId);
   }, [isLoading]);
+
+  useEffect(() => {
+    const fetchCountry = async () => {
+      try {
+        const response = await fetch('https://ipapi.co/country/');
+        setCountry(await response.text());
+      } catch (error) {
+        console.error('Erreur lors de la récupération du pays:', error);
+      }
+    };
+    fetchCountry();
+  }, []);
 
   useEffect(() => {
     if (!isLoading && messages.length > 0) {
@@ -74,7 +87,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
               const movieImagesResponse = await axios.get(`/api/movie/posters?id=${movieDetails.id}`);
               const movieTrailersResponse = await axios.get(`/api/movie/trailers?id=${movieDetails.id}&language=${language}`);
               const movieCreditsResponse = await axios.get(`/api/movie/credits?id=${movieDetails.id}&language=${language}`);
-              const movieStreamingsResponse = await axios.post("/api/movie/streaming?title=" + movieDetails.title + "&mediaType=movie");
+              const movieStreamingsResponse = await axios.get(`/api/movie/streamings?id=${movieDetails.id}`);
               const actorImages = movieCreditsResponse.data.cast.slice(0, 5).map(actor => {
                 return {
                   name: actor.name,
@@ -83,6 +96,8 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
               });
               const movieTrailers = movieTrailersResponse.data.trailerUrl;
               const movieImages = movieImagesResponse.data;
+              const movieStreamings = movieStreamingsResponse.data.results;
+              const movieStreamingsForCountry = movieStreamings[country];
               const { poster_path, runtime } = movieDetailsResponse.data;
               const posterURL = `https://image.tmdb.org/t/p/original${poster_path}`;
               const duration = runtime ? `${Math.floor(runtime / 60)}h ${runtime % 60}min` : "Durée inconnue";
@@ -91,8 +106,9 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
                 .map((actor) => actor.name)
                 .join(", ");
               const id = movieDetailsResponse.data.id;
-              const movieStreamings = movieStreamingsResponse.data;
               console.log("Movie Streamings:", movieStreamings);
+              console.log("Movie Streamings for country:", movieStreamingsForCountry);
+              console.log("Country:", country);
 
               const newMovieDetails = {
                 id,
@@ -110,7 +126,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
                 explication: message["Explication"],
                 language: message["Langue du prompt"],
                 origin: message["Origine"],
-                movieStreamings,
+                movieStreamingsForCountry,
               };
 
               setMovieDetailsMDb((prevMovies) => [...prevMovies.filter((movie) => movie.id !== id), newMovieDetails]);
@@ -127,7 +143,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
         }
       });
     }
-  }, [isLoading]);
+  }, [isLoading, country]);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();

@@ -7,6 +7,7 @@ import {
   faStar as fasStar, faSmile, faFaceGrinTears, faFaceSadTear, faFaceFlushed, faPeoplePulling, faFaceGrinHearts, faBrain, faHeartPulse, faGrinStars, faFire,
 } from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
+import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import { HoverBox, HoverBoxContent, HoverBoxTrigger } from "../ui/hover-box";
 
 const getEmotionIcon = (emotion) => {
@@ -53,7 +54,7 @@ const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
         <HoverBoxContent side="left" align="left">
           <div
             className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-4 z-10"
-            style={isColorLoaded ? { boxShadow: `0 0px 30px -15px ${dominantColor}`, color: 'white' } : {}}
+            style={isColorLoaded ? { filter: `drop-shadow(0 0 30px ${dominantColor})` } : {}}
           >
             {explication}
           </div>
@@ -64,7 +65,7 @@ const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
   return stars;
 };
 
-const MovieCard = ({ id, title, date, duration, emotion, description, posterURL, explication, note, backdropURL, movieTrailers, actorImages, origin, movieStreamings }) => {
+const MovieCard = ({ id, title, date, duration, emotion, description, posterURL, explication, note, backdropURL, movieTrailers, actorImages, origin, movieStreamingsForCountry }) => {
   const [dominantColor, setDominantColor] = useState('#ffffff');
   const [isColorLoaded, setIsColorLoaded] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -158,6 +159,53 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
     return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
   };
 
+  const platformIcons = {
+    'Netflix': '/icons/netflix.svg',
+    'Disney Plus': '/icons/disney-plus.svg',
+    'Amazon Video': '/icons/amazon-prime-video.svg',
+    'Apple TV': '/icons/apple-tv.svg',
+  };
+
+  const getCustomTypeMessage = (types) => {
+    const typeMessages = types.map(type => {
+      switch (type) {
+        case 'rent':
+          return 'Location';
+        case 'buy':
+          return 'Achat';
+        case 'flatrate':
+          return 'Abonnement';
+        default:
+          return '';
+      }
+    });
+    return typeMessages.join(', ');
+  };
+
+  const popularPlatforms = Object.keys(platformIcons);
+
+  const getPlatformIcon = (providerName, logoPath) => {
+    return popularPlatforms.includes(providerName) ? platformIcons[providerName] : `https://image.tmdb.org/t/p/original${logoPath}`;
+  };
+
+  const allPlatforms = [].concat(
+    (movieStreamingsForCountry.flatrate || []).map(service => ({ ...service, isPopular: popularPlatforms.includes(service.provider_name), type: 'flatrate' })),
+    (movieStreamingsForCountry.rent || []).map(service => ({ ...service, isPopular: popularPlatforms.includes(service.provider_name), type: 'rent' })),
+    (movieStreamingsForCountry.buy || []).map(service => ({ ...service, isPopular: popularPlatforms.includes(service.provider_name), type: 'buy' }))
+  );
+
+  const platformsMap = allPlatforms.reduce((acc, service) => {
+    const { type, ...serviceWithoutType } = service;
+    if (!acc[service.provider_id]) {
+      acc[service.provider_id] = { ...serviceWithoutType, types: [type] };
+    } else {
+      acc[service.provider_id].types = [...new Set([...acc[service.provider_id].types, type])];
+    }
+    return acc;
+  }, {});
+
+  const uniquePlatforms = Object.values(platformsMap);
+
 
   return (
     <div
@@ -184,7 +232,8 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                 </HoverBoxTrigger>
                 <HoverBoxContent side="left" align="left" className="w-32">
                   <div
-                    className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-4">
+                    className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-4"
+                    style={isColorLoaded ? { filter: `drop-shadow(0 0 10px ${dominantColor})` } : {}}>
                     {emotion}
                   </div>
                 </HoverBoxContent>
@@ -214,30 +263,58 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                   </HoverBox>
                 ))}
               </div>
-              <div className="flex justify-center mt-4">
-                {movieStreamings ? movieStreamings.map((streaming, index) => (
+              <div className="mt-4 flex space-x-3 gap-4">
+                {uniquePlatforms.filter(platform => platform.isPopular).map((platform, index) => (
                   <HoverBox key={index} delay={100} openOnHover>
-                    <HoverBoxTrigger className="text-xs text-gray-300 hover:text-white cursor-pointer mr-2">
-                      <a href={streaming.WatchUrl} target="_blank" rel="noopener noreferrer">
-                        <img
-                          className="w-8 h-8 object-cover rounded-lg shadow-lg"
-                          src={streaming.Company.LogoUrl}
-                          alt={streaming.Company.Name}
-                          style={{ boxShadow: getDropShadow(dominantColor) }}
-                        />
-                      </a>
+                    <HoverBoxTrigger className="text-xs text-gray-300 hover:text-white cursor-pointer">
+                      <img
+                        className="w-8 h-8"
+                        src={getPlatformIcon(platform.provider_name)}
+                        alt={platform.provider_name}
+                      />
                     </HoverBoxTrigger>
-                    <HoverBoxContent side="bottom" align="start" sideOffset={5}>
-                      <div
-                        className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-4"
-                        style={{ boxShadow: getDropShadow(dominantColor) }}
-                      >
-                        <strong>{streaming.Company.Name}</strong>
-                        <p>{streaming.Company.Description}</p>
+                    <HoverBoxContent side="bottom" align="start" sideOffset={-4}>
+                      <div className="p-4 bg-black bg-opacity-90 rounded-lg w-60"
+                        style={isColorLoaded ? { filter: `drop-shadow(0 0 10px ${dominantColor})` } : {}}>
+                        <div className="flex items-center justify-between space-x-2">
+                          <img className="w-6 h-6" src={getPlatformIcon(platform.provider_name)} alt={platform.provider_name} />
+                          <span className="text-xs text-white text-nowrap">{platform.provider_name}</span>
+                          <div className="text-xs text-gray-300 text-nowrap ml-auto mr-2"> {getCustomTypeMessage(platform.types)}
+                          </div>
+                        </div>
                       </div>
                     </HoverBoxContent>
                   </HoverBox>
-                )) : null}
+                ))}
+                <div className="text-xs text-gray-300 hover:text-white cursor-pointer flex items-center">
+                  {uniquePlatforms.some(platform => !platform.isPopular) && (
+                    <HoverBox delay={100} openOnHover>
+                      <HoverBoxTrigger className="flex items-center space-x-2">
+                        <FontAwesomeIcon icon={faEllipsisH} className="w-6 h-6" />
+                      </HoverBoxTrigger>
+                      <HoverBoxContent side="right" align="start" sideOffset={5}>
+                        <div
+                          className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-4"
+                          style={isColorLoaded ? { filter: `drop-shadow(0 0 10px ${dominantColor})` } : {}}
+                        >
+                          {uniquePlatforms.filter(platform => !platform.isPopular).map((platform, index) => (
+                            <div key={index} className="flex items-center justify-between my-2">
+                              <img
+                                className="w-6 h-6 mr-2"
+                                src={getPlatformIcon(platform.provider_name, platform.logo_path)}
+                                alt={platform.provider_name}
+                              />
+                              <span className="text-sm text-white whitespace-nowrap">{platform.provider_name}</span>
+                              <span className="text-xs text-gray-300 whitespace-nowrap ml-2">
+                                {getCustomTypeMessage(platform.types)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </HoverBoxContent>
+                    </HoverBox>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -284,7 +361,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
           )}
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
