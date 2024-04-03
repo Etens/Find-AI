@@ -53,7 +53,7 @@ const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
         </HoverBoxTrigger>
         <HoverBoxContent side="left" align="left">
           <div
-            className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-4 z-10"
+            className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-4"
             style={isColorLoaded ? { filter: `drop-shadow(0 0 30px ${dominantColor})` } : {}}
           >
             {explication}
@@ -73,6 +73,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const [hoverShadow, setHoverShadow] = useState('0 0 30px -15px white');
   const [mainDivClassNames, setMainDivClassNames] = useState(`relative rounded-lg w-full shadow-lg bg-black ${id}`);
+  const [zIndex, setZIndex] = useState(1);
 
   const iframeRef = useRef(null);
 
@@ -91,12 +92,14 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
   }, [backdropURL]);
 
   const handleMouseEnter = () => {
+    setZIndex(10);
     if (!trailerPlayed) {
       setHoverShadow(`0 0 60px -15px ${dominantColor}`);
     }
   };
 
   const handleMouseLeave = () => {
+    setZIndex(1);
     if (!trailerPlayed) {
       setHoverShadow('0 0 30px -15px white');
     }
@@ -105,6 +108,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
   const cardStyle = {
     transition: 'box-shadow 0.5s ease',
     boxShadow: hoverShadow,
+    zIndex: zIndex,
   };
 
   const handleFlip = () => {
@@ -189,9 +193,9 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
   };
 
   const allPlatforms = [].concat(
-    (movieStreamingsForCountry.flatrate || []).map(service => ({ ...service, isPopular: popularPlatforms.includes(service.provider_name), type: 'flatrate' })),
-    (movieStreamingsForCountry.rent || []).map(service => ({ ...service, isPopular: popularPlatforms.includes(service.provider_name), type: 'rent' })),
-    (movieStreamingsForCountry.buy || []).map(service => ({ ...service, isPopular: popularPlatforms.includes(service.provider_name), type: 'buy' }))
+    (movieStreamingsForCountry?.flatrate || []).map(service => ({ ...service, isPopular: popularPlatforms.includes(service.provider_name), type: 'flatrate' })),
+    (movieStreamingsForCountry?.rent || []).map(service => ({ ...service, isPopular: popularPlatforms.includes(service.provider_name), type: 'rent' })),
+    (movieStreamingsForCountry?.buy || []).map(service => ({ ...service, isPopular: popularPlatforms.includes(service.provider_name), type: 'buy' }))
   );
 
   const platformsMap = allPlatforms.reduce((acc, service) => {
@@ -223,7 +227,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
               { hoverShadow: 'none', color: 'white' }
           }
         >
-          <div className="flex relative p-4 p-rigth-0 z-30">
+          <div className="flex relative p-4 p-rigth-0">
             <div className="flex flex-col items-center justify-center mb-6">
               <img className="w-24 h-36 rounded shadow-lg" src={posterURL} alt={title} />
               <HoverBox delay={100} openOnHover className="mt-2">
@@ -248,7 +252,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
               <p className="mt-3 text-gray-200 text-xs leading-relaxed max-w-lg">{description}</p>
               <div className="mt-4">
                 {actorImages.map((actor, index) => (
-                  <HoverBox key={index} delay={100} openOnHover>
+                  <HoverBox key={index} delay={100}>
                     <HoverBoxTrigger className="text-xs text-gray-300 hover:text-white cursor-pointer mr-2">
                       {actor.name}
                     </HoverBoxTrigger>
@@ -263,9 +267,9 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                   </HoverBox>
                 ))}
               </div>
-              <div className="mt-4 flex space-x-3 gap-4">
+              <div className="mt-4 flex space-x-1 gap-4">
                 {uniquePlatforms.filter(platform => platform.isPopular).map((platform, index) => (
-                  <HoverBox key={index} delay={100} openOnHover>
+                  <HoverBox key={index} delay={100}>
                     <HoverBoxTrigger className="text-xs text-gray-300 hover:text-white cursor-pointer">
                       <img
                         className="w-8 h-8"
@@ -274,12 +278,16 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                       />
                     </HoverBoxTrigger>
                     <HoverBoxContent side="bottom" align="start" sideOffset={-4}>
-                      <div className="p-4 bg-black bg-opacity-90 rounded-lg w-60"
+                      <div className="p-4 bg-black bg-opacity-90 rounded-lg"
                         style={isColorLoaded ? { filter: `drop-shadow(0 0 10px ${dominantColor})` } : {}}>
-                        <div className="flex items-center justify-between space-x-2">
-                          <img className="w-6 h-6" src={getPlatformIcon(platform.provider_name)} alt={platform.provider_name} />
-                          <span className="text-xs text-white text-nowrap">{platform.provider_name}</span>
-                          <div className="text-xs text-gray-300 text-nowrap ml-auto mr-2"> {getCustomTypeMessage(platform.types)}
+                        <div className="flex items-center justify-between">
+                          <div className="flex flex-col justify-start">
+                            <span className="text-xs text-white">
+                              {platform.provider_name}
+                            </span>
+                            <div className="text-xs text-gray-300 mr-2 mt-1">
+                              {getCustomTypeMessage(platform.types)}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -288,7 +296,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                 ))}
                 <div className="text-xs text-gray-300 hover:text-white cursor-pointer flex items-center">
                   {uniquePlatforms.some(platform => !platform.isPopular) && (
-                    <HoverBox delay={100} openOnHover>
+                    <HoverBox delay={100}>
                       <HoverBoxTrigger className="flex items-center space-x-2">
                         <FontAwesomeIcon icon={faEllipsisH} className="w-6 h-6" />
                       </HoverBoxTrigger>
@@ -298,16 +306,20 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                           style={isColorLoaded ? { filter: `drop-shadow(0 0 10px ${dominantColor})` } : {}}
                         >
                           {uniquePlatforms.filter(platform => !platform.isPopular).map((platform, index) => (
-                            <div key={index} className="flex items-center justify-between my-2">
+                            <div key={index} className="flex items-center space-x-2 p-1">
                               <img
-                                className="w-6 h-6 mr-2"
+                                className="flex w-8 h-8 items-start rounded-lg"
                                 src={getPlatformIcon(platform.provider_name, platform.logo_path)}
                                 alt={platform.provider_name}
                               />
-                              <span className="text-sm text-white whitespace-nowrap">{platform.provider_name}</span>
-                              <span className="text-xs text-gray-300 whitespace-nowrap ml-2">
-                                {getCustomTypeMessage(platform.types)}
-                              </span>
+                              <div className="flex flex-col mb-1">
+                                <span className="text-sm text-white">
+                                  {platform.provider_name}
+                                </span>
+                                <span className="text-xs text-gray-300">
+                                  {getCustomTypeMessage(platform.types)}
+                                </span>
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -328,7 +340,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
         <div className={`flip-card-back absolute inset-0 bg-black`}>
           {isFlipped && (
             <>
-              <div className="absolute inset-0 flex items-center justify-center z-10">
+              <div className="absolute inset-0 flex items-center justify-center">
                 {iframeLoaded ? null : <div className="flex justify-center items-center h-screen">
                   <div className="relative w-14 h-14 animate-spin rounded-full"
                     style={{
@@ -344,7 +356,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                 }
               </div>
               <div
-                className="absolute inset-0 flex items-center justify-center z-10"
+                className="absolute inset-0 flex items-center justify-center"
                 onClick={handleFlip}
               ></div>
               <iframe

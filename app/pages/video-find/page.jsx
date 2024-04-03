@@ -7,7 +7,7 @@ import { Spotlight } from "../../components/ui/spotlight";
 
 export default function Video() {
   const [assistantContent, setAssistantContent] = useState([]);
-  const [movieDetailsMDb, setMovieDetailsMDb] = useState([]);
+  const [movieDetailsMDb, setMovieDetailsMDb] = useState([]);;
 
   return (
     <main className="flex flex-col items-center justify-center w-full h-full">
@@ -17,7 +17,7 @@ export default function Video() {
       />
       <NavBar />
       <div className="flex flex-col bg-black/[0.96] antialiased bg-grid-white/[0.02] mt-20 mb-40">
-        <div className=" p-4 max-w-7xl mx-auto relative z-10 w-full pt-20 md:pt-0">
+        <div className=" p-4 max-w-7xl mx-auto relative w-full pt-20 md:pt-0">
           <h1 className="text-4xl md:text-7xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 bg-opacity-50">
             Find <br /> imaginez trouvez regardez
           </h1>
@@ -33,7 +33,7 @@ export default function Video() {
             movieDetailsMDb={movieDetailsMDb}
           />
         </div>
-        <div className="grid grid-cols-1 gap-14 mt-11 w-full h-full p-4">
+        <div className="grid grid-cols-1 gap-14 mt-11 w-full h-full p-4 z-40">
           {movieDetailsMDb
             .slice()
             .reverse()

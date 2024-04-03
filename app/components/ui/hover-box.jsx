@@ -13,9 +13,9 @@ const HoverBoxContent = React.forwardRef(
       ref={ref}
       align={align}
       sideOffset={sideOffset}
-      portalled={portalled}
+      portalled={true}
       className={
-        "z-40 w-64 rounded-md p-4 text-gray-950 shadow-md outline-none" +
+        "z-50 w-64 rounded-md p-4 text-gray-950 shadow-md outline-none" +
         " data-[state=open]:animate-in data-[state=closed]:animate-out" +
         " data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" +
         " data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95" +
