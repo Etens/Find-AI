@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlassPlus, faCircleXmark, faCircleArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { Textarea } from "../../components/ui/textarea";
 import { Progress } from "../../components/ui/progress";
+import { Button } from "../../components/ui/button";
 import SearchOptionsList from "./search-options-list";
 
 
@@ -19,6 +20,72 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [fetchOver, setFetchOver] = useState(false);
   const [country, setCountry] = useState("US");
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    handleSubmit(e);
+    clearInput();
+    console.log("Selected Options:", selectedOptions);
+    console.log("Input:", input);
+  };
+
+  const clearInput = () => {
+    handleInputChange({ target: { value: "" } });
+    const textarea = document.querySelector(".pl-12");
+    textarea.style.height = "inherit";
+    setShowOptions(false);
+    setSelectedOptions([]);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && e.shiftKey) {
+      e.preventDefault();
+      const { value, selectionStart, selectionEnd } = e.target;
+      handleInputChange({
+        target: {
+          value: value.slice(0, selectionStart) + "\n" + value.slice(selectionEnd),
+        },
+      });
+      setTimeout(() => {
+        e.target.selectionStart = e.target.selectionEnd = selectionStart + 1;
+      }, 0);
+    } else if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+      clearInput();
+    }
+  };
+
+  const handleInputHeight = (e) => {
+    e.target.style.height = "inherit";
+  };
+
+  const handleOptionChange = (instruction, label) => {
+    const existingOptionIndex = selectedOptions.findIndex((option) => option.label === label);
+
+    let updatedInput = input;
+
+    if (existingOptionIndex !== -1) {
+      updatedInput = updatedInput.replace(new RegExp("\\b" + selectedOptions[existingOptionIndex].value + "\\b", 'g'), '').trim();
+
+      const updatedOptions = selectedOptions.map((option, index) =>
+        index === existingOptionIndex ? { label, value: instruction } : option
+      );
+      setSelectedOptions(updatedOptions);
+
+      updatedInput = `${updatedInput} ${instruction}`.trim();
+    } else {
+      updatedInput = `${updatedInput} ${instruction}`.trim();
+      setSelectedOptions([...selectedOptions, { label, value: instruction }]);
+    }
+
+    handleInputChange({ target: { value: updatedInput } });
+  };
+
+  useEffect(() => {
+    const textarea = document.querySelector(".pl-12");
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }, [input]);
 
   useEffect(() => {
     let intervalId;
@@ -145,64 +212,6 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
     }
   }, [isLoading, country]);
 
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    handleSubmit(e);
-    clearInput();
-  };
-
-  const clearInput = () => {
-    handleInputChange({ target: { value: "" } });
-    const textarea = document.querySelector(".pl-12");
-    textarea.style.height = "inherit";
-    setShowOptions(false);
-    setSelectedOptions([]);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && e.shiftKey) {
-      e.preventDefault();
-      const { value, selectionStart, selectionEnd } = e.target;
-      handleInputChange({
-        target: {
-          value: value.slice(0, selectionStart) + "\n" + value.slice(selectionEnd),
-        },
-      });
-      setTimeout(() => {
-        e.target.selectionStart = e.target.selectionEnd = selectionStart + 1;
-      }, 0);
-    } else if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit(e);
-      clearInput();
-    }
-  };
-
-  const handleInputHeight = (e) => {
-    e.target.style.height = "inherit";
-  };
-
-  const handleOptionChange = (instruction, label) => {
-    const existingOptionIndex = selectedOptions.findIndex((option) => option.label === label);
-
-    let updatedInput = input;
-
-    if (existingOptionIndex !== -1) {
-      updatedInput = updatedInput.replace(new RegExp("\\b" + selectedOptions[existingOptionIndex].value + "\\b", 'g'), '').trim();
-
-      const updatedOptions = selectedOptions.map((option, index) =>
-        index === existingOptionIndex ? { label, value: instruction } : option
-      );
-      setSelectedOptions(updatedOptions);
-
-      updatedInput = `${updatedInput} ${instruction}`.trim();
-    } else {
-      updatedInput = `${updatedInput} ${instruction}`.trim();
-      setSelectedOptions([...selectedOptions, { label, value: instruction }]);
-    }
-
-    handleInputChange({ target: { value: updatedInput } });
-  };
 
   return (
     <div className="flex flex-col items-center pt-9">

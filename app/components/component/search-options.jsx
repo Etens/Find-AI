@@ -25,6 +25,11 @@ export function SearchOptions({ label, options, selectedOption, buttonIcon, onIn
             notationDescription = value.toLowerCase();
         }
         return `avec une notation ${notationDescription}`;
+      case "Generation Multiples":
+        if (value === "Oui") {
+          return "Pourriez-vous me donner trois suggestions distinctes, s'il vous plaît?";
+        }
+        return ``;
       case "Durée":
         return `d'une durée maximale de ${value.toLowerCase()}`;
       case "Emotion":

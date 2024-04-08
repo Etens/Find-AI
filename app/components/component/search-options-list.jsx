@@ -11,10 +11,17 @@ import {
     faUsers as iconKids,
     faBuilding as iconIndie,
     faCirclePlay as iconPlay,
+    faWandMagicSparkles as iconMagic,
 } from "@fortawesome/free-solid-svg-icons";
 
 const SearchOptionsList = ({ handleOptionChange, showOptions, setShowOptions }) => {
     const [selectedMediaType, setSelectedMediaType] = useState('');
+    const [generateMultiple, setGenerateMultiple] = useState(false);
+
+    const handleGenerateMultipleChange = (value) => {
+        setGenerateMultiple(value === 'yes');
+        handleOptionChange(value, "Generation Multiples");
+    };
 
     const handleMediaTypeChange = (instruction, label) => {
         setSelectedMediaType(instruction);
@@ -29,6 +36,16 @@ const SearchOptionsList = ({ handleOptionChange, showOptions, setShowOptions }) 
     return (
         <>
             <div className="text-xs text-gray-300 max-w-full flex flex-wrap justify-center">
+                <SearchOptions
+                    label="Generation Multiples"
+                    options={[
+                        { value: "yes", label: "Oui" },
+                        { value: "no", label: "Non" },
+                    ]}
+                    selectedOption={generateMultiple ? "yes" : "no"}
+                    buttonIcon={iconMagic}
+                    onInstructionChange={handleGenerateMultipleChange}
+                />
                 <SearchOptions
                     label="Type de Médias"
                     options={[
