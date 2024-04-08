@@ -77,5 +77,8 @@ body {
   object-fit: cover;
   position: absolute;
   top: -74px;
-  aspect-ratio:7/4; 
+  aspect-ratio: 7/4;
+  @media screen and (max-width: 640px) {
+    aspect-ratio: 6/4;
+  }
 }

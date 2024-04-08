@@ -36,7 +36,7 @@ const SearchOptionsList = ({ handleOptionChange, showOptions, setShowOptions }) 
     return (
         <>
             <div className="text-xs text-gray-300 max-w-full flex flex-wrap justify-center">
-                <SearchOptions
+                {/* <SearchOptions
                     label="Generation Multiples"
                     options={[
                         { value: "yes", label: "Oui" },
@@ -45,7 +45,7 @@ const SearchOptionsList = ({ handleOptionChange, showOptions, setShowOptions }) 
                     selectedOption={generateMultiple ? "yes" : "no"}
                     buttonIcon={iconMagic}
                     onInstructionChange={handleGenerateMultipleChange}
-                />
+                /> */}
                 <SearchOptions
                     label="Type de Médias"
                     options={[
