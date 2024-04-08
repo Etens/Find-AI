@@ -19,8 +19,8 @@ export default function Home() {
           <h1 className="text-6xl lg:text-7xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 bg-opacity-50 mb-10">
             Find <br /> imaginez trouvez regardez
           </h1>
-          <p className="mt-4 font-normal text-base text-neutral-300 max-w-lg text-center mx-auto">Votre imagination ouvre la porte à l'évasion cinématographique idéale. Dites adieu aux recherches, laissez-vous porter par l'inspiration.</p>
-          <p className="mt-4 font-normal text-xs text-neutral-300 max-w-lg text-center mx-auto">Vous manquez d'idées ? Laissez-vous guider par les options de recherche ci-dessous.</p>
+          <p className="mt-4 font-normal text-base text-neutral-300 max-w-lg text-center mx-auto">Votre imagination ouvre la porte à l&apos;évasion cinématographique idéale. Dites adieu aux recherches, laissez-vous porter par l&apos;inspiration.</p>
+          <p className="mt-4 font-normal text-xs text-neutral-300 max-w-lg text-center mx-auto">Vous manquez d&apos;idées ? Laissez-vous guider par les options de recherche ci-dessous.</p>
           <SearchBar setAssistantContent={setAssistantContent} assistantContent={assistantContent} setMovieDetailsMDb={setMovieDetailsMDb} movieDetailsMDb={movieDetailsMDb} />
         </div>
         <div className="grid grid-cols-1 gap-14 mt-11 w-full h-full z-40 p-4 sm:p-6 md:p-8 max-w-7xl mx-auto">

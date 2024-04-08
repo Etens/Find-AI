@@ -23,7 +23,7 @@ const getEmotionIcon = (emotion) => {
   return emotionIcons[emotion] || faSmile;
 };
 
-const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
+const RatingStars = (note, explication, dominantColor, isColorLoaded) => {
   const [hovered, setHovered] = useState(false);
   let stars = [];
   let rating;
@@ -235,7 +235,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                 </HoverBoxContent>
               </HoverBox>
               <div className="text-gray-300 text-xs flex space-x-1 mt-2 sm:mt-1">
-                {getRatingStars(note, explication, dominantColor, isColorLoaded)}
+                {RatingStars(note, explication, dominantColor, isColorLoaded)}
               </div>
             </div>
             <div className="ml-4 text-gray-300 z-10">
