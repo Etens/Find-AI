@@ -8,67 +8,6 @@ import { faStar as farStar } from "@fortawesome/free-regular-svg-icons";
 import { faEllipsisH, faTurnUp } from "@fortawesome/free-solid-svg-icons";
 import { HoverBox, HoverBoxContent, HoverBoxTrigger } from "../ui/hover-box";
 
-const getEmotionIcon = (emotion) => {
-  const emotionIcons = {
-    Rire: faFaceGrinTears,
-    Tristesse: faFaceSadTear,
-    Peur: faFaceFlushed,
-    Motivation: faPeoplePulling,
-    Amour: faFaceGrinHearts,
-    Réflexion: faBrain,
-    Adrénaline: faHeartPulse,
-    Émerveillement: faGrinStars,
-    Frisson: faFire,
-  };
-  return emotionIcons[emotion] || faSmile;
-};
-
-const RatingStars = (note, explication, dominantColor, isColorLoaded) => {
-  const [hovered, setHovered] = useState(false);
-  let stars = [];
-  let rating;
-
-  switch (note) {
-    case "Excellent":
-      rating = 5;
-      break;
-    case "Bon":
-      rating = 4;
-      break;
-    case "Moyen":
-      rating = 3;
-      break;
-    case "Mauvais":
-      rating = 2;
-      break;
-    case "Désastreux":
-      rating = 1;
-      break;
-    default:
-      rating = 0;
-  }
-
-  const starStyles = hovered ? { color: "white" } : {};
-
-  for (let i = 0; i < 5; i++) {
-    stars.push(
-      <HoverBox
-        key={`hover-${i}`}
-        delay={100} openOnHover>
-        <HoverBoxTrigger onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{ cursor: "pointer", ...starStyles }}>
-          <FontAwesomeIcon icon={i < rating ? fasStar : farStar} size="xs" />
-        </HoverBoxTrigger>
-        <HoverBoxContent side="left" align="left">
-          <div className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-4" style={isColorLoaded ? { filter: `drop-shadow(0 0 30px ${dominantColor})` } : {}}>
-            {explication}
-          </div>
-        </HoverBoxContent>
-      </HoverBox>
-    );
-  }
-  return stars;
-};
-
 const MovieCard = ({ id, title, date, duration, emotion, description, posterURL, explication, note, backdropURL, movieTrailers, actorImages, origin, movieStreamingsForCountry }) => {
   const [dominantColor, setDominantColor] = useState("#ffffff");
   const [isColorLoaded, setIsColorLoaded] = useState(false);
@@ -86,15 +25,31 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
     platform: {},
     otherPlatforms: false
   });
-  const [openStates, setOpenStates] = useState({});
 
-  const toggleOpenState = (id) => {
-    setOpenStates(prevState => ({
-      ...prevState,
-      [id]: !prevState[id]
-    }));
+  const getRatingValue = (note) => {
+    return {
+      "Excellent": 5,
+      "Bon": 4,
+      "Moyen": 3,
+      "Mauvais": 2,
+      "Désastreux": 1
+    }[note] || 0;
   };
 
+  const getEmotionIcon = (emotion) => {
+    const emotionIcons = {
+      Rire: faFaceGrinTears,
+      Tristesse: faFaceSadTear,
+      Peur: faFaceFlushed,
+      Motivation: faPeoplePulling,
+      Amour: faFaceGrinHearts,
+      Réflexion: faBrain,
+      Adrénaline: faHeartPulse,
+      Émerveillement: faGrinStars,
+      Frisson: faFire,
+    };
+    return emotionIcons[emotion] || faSmile;
+  };
 
   const iframeRef = useRef(null);
 
@@ -102,8 +57,14 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
     setIsOpen({ ...isOpen, emotion: !isOpen.emotion });
   };
 
-  const handlePlatformClick = () => {
-    setIsOpen({ ...isOpen, platform: !isOpen.platform });
+  const handlePlatformClick = (platformId) => {
+    setIsOpen(prevState => ({
+      ...prevState,
+      platform: {
+        ...prevState.platform,
+        [platformId]: !prevState.platform[platformId]
+      }
+    }));
   };
 
   const handleOtherPlatformsClick = () => {
@@ -115,6 +76,13 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
       ...isOpen,
       actor: { ...isOpen.actor, [actorIndex]: !isOpen.actor[actorIndex] }
     });
+  };
+
+  const handleRatingClick = () => {
+    setIsOpen(prevState => ({
+      ...prevState,
+      rating: !prevState.rating
+    }));
   };
 
 
@@ -293,7 +261,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
           style={isColorLoaded ? { hoverShadow: `0 0px 20px -10px ${dominantColor}`, color: "white" } : { hoverShadow: "none", color: "white" }}>
           <div className="flex relative p-3 md:p-4 rounded-lg">
             <div className="flex flex-col items-center justify-center mb-6">
-              <img className="w-20 h-32 rounded shadow-lg sm:w-24 sm:h-36" src={posterURL} alt={title} />
+              <img className="w-20 h-32 rounded shadow-lg sm:w-24 sm:h-36 mt-2" src={posterURL} alt={title} />
               <HoverBox
                 delay={100}
                 className="mt-2"
@@ -308,23 +276,40 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                   </div>
                 </HoverBoxContent>
               </HoverBox>
-              <div className="text-gray-300 text-xs flex space-x-1 lg:mt-1">
-                {RatingStars(note, explication, dominantColor, isColorLoaded)}
-              </div>
-            </div>
+              <div className="text-gray-300 text-xs flex space-x-2 lg:mt-1 mt-1">
+                <HoverBox delay={100} {...(mobileScreen === "sm" && isOpen.rating ? { open: true } : {})}>
+                  <div style={{ display: 'flex' }} onClick={handleRatingClick}>
+                    {[...Array(5)].map((_, i) => {
+                      const ratingValue = i + 1;
+                      return (
+                        <HoverBoxTrigger key={i} style={{ cursor: "pointer" }} className="mr-1" >
+                          <FontAwesomeIcon icon={ratingValue <= getRatingValue(note) ? fasStar : farStar} size="xs" />
+                        </HoverBoxTrigger>
+                      );
+                    })}
+                  </div>
+                  {isOpen.rating && (
+                    <HoverBoxContent side="left" align="left">
+                      <div className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-6" style={isColorLoaded ? { filter: `drop-shadow(0 0 30px ${dominantColor})` } : {}}>
+                        {explication}
+                      </div>
+                    </HoverBoxContent>
+                  )}
+                </HoverBox>
+              </div>            </div>
             <div className="ml-4 text-white z-10 mt-2 md:mt-1">
               <h1 className="text-xl sm:text-2xl font-bold">{title}</h1>
               <h4 className="mt-2 text-xs sm:text-[13px] lg:text-sm text-gray-300">
                 {date} - {duration} - {origin}
               </h4>
               <p className="text-gray-300 leading-relaxed sm:mt-4 mt-2 max-w-[220px] lg:max-w-lg md:max-w-sm text-[8px] sm:text-[10px] lg:text-xs">{description}</p>
-              <div className="mt-1 md:flex md:space-x-4 sm:mt-4 ">
+              <div className="mt-1 md:flex md:space-x-2 sm:mt-4 ">
                 {actorImages.map((actor, index) => (
                   <HoverBox
                     key={index}
                     delay={100}
-                    {...(mobileScreen === "sm" && isOpen.actor[index] ? { open: true } : {})}>
-                    <HoverBoxTrigger onclick={handleActorClick} className="text-gray-300 hover:text-white cursor-pointer mr-1 text-[8px] sm:text-[10px] lg:text-xs"> {actor.name} </HoverBoxTrigger>
+                    {...(mobileScreen === "sm" && isOpen.actor[index] ? { open: true } : {})} >
+                    <HoverBoxTrigger onClick={() => handleActorClick(index)} className="text-gray-300 hover:text-white cursor-pointer mr-1 text-[8px] sm:text-[10px] lg:text-xs"> {actor.name} </HoverBoxTrigger>
                     <HoverBoxContent side="bottom" align="start" sideOffset={-4}>
                       <img className="rounded object-cover shadow-lg h-auto w-14" src={actor.imageUrl} alt={actor.name} style={isColorLoaded ? { filter: `drop-shadow(0 0 10px ${dominantColor})` } : {}} />
                     </HoverBoxContent>
@@ -335,8 +320,12 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                 {uniquePlatforms
                   .filter((platform) => platform.isPopular)
                   .map((platform, index) => (
-                    <HoverBox key={index} delay={100} {...(mobileScreen === "sm" && isOpen.platform ? { open: true } : {})}>
-                      <HoverBoxTrigger className="text-xs text-gray-300 hover:text-white cursor-pointer" onClick={handlePlatformClick}>
+                    <HoverBox
+                      key={index}
+                      delay={100}
+                      {...(mobileScreen === "sm" && isOpen.platform[platform.provider_id] ? { open: true } : {})}
+                    >
+                      <HoverBoxTrigger className="text-xs text-gray-300 hover:text-white cursor-pointer" onClick={() => handlePlatformClick(platform.provider_id)}>
                         <img className="w-5 h-5 sm:w-8 sm:h-8"
                           src={getPlatformIcon(platform.provider_name)}
                           alt={platform.provider_name}
@@ -360,7 +349,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                       delay={100}
                       {...(mobileScreen === "sm" && isOpen.otherPlatforms ? { open: true } : {})}
                     >
-                      <HoverBoxTrigger className="flex items-center space-x-2" onclick={handleOtherPlatformsClick} >
+                      <HoverBoxTrigger className="flex items-center space-x-2" onClick={handleOtherPlatformsClick} >
                         <FontAwesomeIcon icon={faEllipsisH} className="w-6 h-6" />
                       </HoverBoxTrigger>
                       <HoverBoxContent side="right" align="start" sideOffset={5}>
