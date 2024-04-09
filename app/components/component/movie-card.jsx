@@ -5,7 +5,7 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as fasStar, faSmile, faFaceGrinTears, faFaceSadTear, faFaceFlushed, faPeoplePulling, faFaceGrinHearts, faBrain, faHeartPulse, faGrinStars, faFire } from "@fortawesome/free-solid-svg-icons";
 import { faStar as farStar } from "@fortawesome/free-regular-svg-icons";
-import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisH, faTurnUp } from "@fortawesome/free-solid-svg-icons";
 import { HoverBox, HoverBoxContent, HoverBoxTrigger } from "../ui/hover-box";
 
 const getEmotionIcon = (emotion) => {
@@ -23,7 +23,7 @@ const getEmotionIcon = (emotion) => {
   return emotionIcons[emotion] || faSmile;
 };
 
-const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
+const RatingStars = (note, explication, dominantColor, isColorLoaded) => {
   const [hovered, setHovered] = useState(false);
   let stars = [];
   let rating;
@@ -52,7 +52,9 @@ const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
 
   for (let i = 0; i < 5; i++) {
     stars.push(
-      <HoverBox key={`hover-${i}`} delay={100} openOnHover>
+      <HoverBox
+        key={`hover-${i}`}
+        delay={100} openOnHover>
         <HoverBoxTrigger onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} style={{ cursor: "pointer", ...starStyles }}>
           <FontAwesomeIcon icon={i < rating ? fasStar : farStar} size="xs" />
         </HoverBoxTrigger>
@@ -74,10 +76,77 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
   const [trailerPlayed, setTrailerPlayed] = useState(false);
   const [iframeLoaded, setIframeLoaded] = useState(false);
   const [hoverShadow, setHoverShadow] = useState("0 0 30px -15px white");
-  const [mainDivClassNames, setMainDivClassNames] = useState(`relative rounded-lg w-full shadow-lg bg-black ${id}`);
+  const [mainDivClassNames, setMainDivClassNames] = useState(`relative rounded-lg w-xs h-xs shadow-lg bg-black md:h-[24rem] sm:h-[15rem] h-[9rem] ${id}`);
   const [zIndex, setZIndex] = useState(1);
+  const [mobileScreen, setMobileScreen] = useState("sm");
+  const [isOpen, setIsOpen] = useState({
+    emotion: false,
+    rating: false,
+    actor: {},
+    platform: {},
+    otherPlatforms: false
+  });
+  const [openStates, setOpenStates] = useState({});
+
+  const toggleOpenState = (id) => {
+    setOpenStates(prevState => ({
+      ...prevState,
+      [id]: !prevState[id]
+    }));
+  };
+
 
   const iframeRef = useRef(null);
+
+  const handleEmotionClick = () => {
+    setIsOpen({ ...isOpen, emotion: !isOpen.emotion });
+  };
+
+  const handlePlatformClick = () => {
+    setIsOpen({ ...isOpen, platform: !isOpen.platform });
+  };
+
+  const handleOtherPlatformsClick = () => {
+    setIsOpen({ ...isOpen, otherPlatforms: !isOpen.otherPlatforms });
+  };
+
+  const handleActorClick = (actorIndex) => {
+    setIsOpen({
+      ...isOpen,
+      actor: { ...isOpen.actor, [actorIndex]: !isOpen.actor[actorIndex] }
+    });
+  };
+
+
+  useEffect(() => {
+    const matchMedia = window.matchMedia('(min-width: 1024px)');
+
+    const handleScreenChange = (e) => {
+      setMobileScreen(e.matches ? "lg" : "sm");
+    };
+
+    matchMedia.addEventListener('change', handleScreenChange);
+    handleScreenChange(matchMedia);
+
+    return () => matchMedia.removeEventListener('change', handleScreenChange);
+  }, [])
+
+  const handleCardClick = () => {
+    if (mobileScreen === "lg") {
+      setIsFlipped(!isFlipped);
+    }
+  };
+
+  const FlipButton = ({ onClick }) => (
+    <button
+      className={`absolute bottom-4 right-4 z-20 bg-opacity-50 rounded-md lg:hidden focus:outline-none`}
+      onClick={onClick}
+      aria-label="Retourner la carte"
+    >
+      <FontAwesomeIcon icon={faTurnUp} className="text-white w-4 h-4" />
+    </button>
+  );
+
 
   useEffect(() => {
     if (backdropURL) {
@@ -215,19 +284,23 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
   return (
     <div className={`${mainDivClassNames} transition-height duration-500 ease-in-out`}
       style={cardStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      <FlipButton onClick={handleFlip} />
       <div
-        className={`flip-card-inner relative h-full 
-        ${isFlipped ? "flipped" : ""}`}
-        onClick={handleFlip}
+        className={`flip-card-inner relative h-full ${isFlipped ? "flipped" : ""}`}
+        onClick={handleCardClick}
       >
         <div className="perspective m-auto"
           style={isColorLoaded ? { hoverShadow: `0 0px 20px -10px ${dominantColor}`, color: "white" } : { hoverShadow: "none", color: "white" }}>
-          <div className="flex relative p-4 rounded-lg">
+          <div className="flex relative p-3 md:p-4 rounded-lg">
             <div className="flex flex-col items-center justify-center mb-6">
-              <img className="w-24 h-32 rounded shadow-lg sm:h-36" src={posterURL} alt={title} />
-              <HoverBox delay={100} openOnHover className="mt-2">
-                <HoverBoxTrigger className="text-sm text-gray-300 hover:text-white cursor-pointer">
-                  <FontAwesomeIcon icon={getEmotionIcon(emotion)} size="xs" className="mt-2 w-4 h-4" />
+              <img className="w-20 h-32 rounded shadow-lg sm:w-24 sm:h-36" src={posterURL} alt={title} />
+              <HoverBox
+                delay={100}
+                className="mt-2"
+                {...(mobileScreen === "sm" && isOpen.emotion ? { open: true } : {})}
+              >
+                <HoverBoxTrigger className="text-sm text-gray-300 hover:text-white cursor-pointer" onClick={handleEmotionClick}>
+                  <FontAwesomeIcon icon={getEmotionIcon(emotion)} size="xs" className="mt-2 w-3 h-3 md:w-4 md:h-5 text-gray-300" />
                 </HoverBoxTrigger>
                 <HoverBoxContent side="left" align="left" className="w-32">
                   <div className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-4" style={isColorLoaded ? { filter: `drop-shadow(0 0 10px ${dominantColor})` } : {}}>
@@ -236,32 +309,35 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                 </HoverBoxContent>
               </HoverBox>
               <div className="text-gray-300 text-xs flex space-x-1 lg:mt-1">
-                {getRatingStars(note, explication, dominantColor, isColorLoaded)}
+                {RatingStars(note, explication, dominantColor, isColorLoaded)}
               </div>
             </div>
-            <div className="ml-4 text-white z-10 mt-2">
-              <h1 className="text-xl sm:text-lg font-bold">{title}</h1>
+            <div className="ml-4 text-white z-10 mt-2 md:mt-1">
+              <h1 className="text-xl sm:text-2xl font-bold">{title}</h1>
               <h4 className="mt-2 text-xs sm:text-[13px] lg:text-sm text-gray-300">
                 {date} - {duration} - {origin}
               </h4>
-              <p className="text-gray-300 leading-relaxed sm:mt-4 mt-2 max-w-sm lg:max-w-lg text-[8px] sm:text-[10px] lg:text-xs">{description}</p>
+              <p className="text-gray-300 leading-relaxed sm:mt-4 mt-2 max-w-[220px] lg:max-w-lg md:max-w-sm text-[8px] sm:text-[10px] lg:text-xs">{description}</p>
               <div className="mt-1 md:flex md:space-x-4 sm:mt-4 ">
                 {actorImages.map((actor, index) => (
-                  <HoverBox key={index} delay={100}>
-                    <HoverBoxTrigger className="text-gray-300 hover:text-white cursor-pointer mr-1 text-[8px] sm:text-[10px] lg:text-xs"> {actor.name} </HoverBoxTrigger>
+                  <HoverBox
+                    key={index}
+                    delay={100}
+                    {...(mobileScreen === "sm" && isOpen.actor[index] ? { open: true } : {})}>
+                    <HoverBoxTrigger onclick={handleActorClick} className="text-gray-300 hover:text-white cursor-pointer mr-1 text-[8px] sm:text-[10px] lg:text-xs"> {actor.name} </HoverBoxTrigger>
                     <HoverBoxContent side="bottom" align="start" sideOffset={-4}>
                       <img className="rounded object-cover shadow-lg h-auto w-14" src={actor.imageUrl} alt={actor.name} style={isColorLoaded ? { filter: `drop-shadow(0 0 10px ${dominantColor})` } : {}} />
                     </HoverBoxContent>
                   </HoverBox>
                 ))}
               </div>
-              <div className="mt-4 flex space-x-1 gap-4">
+              <div className="mt-4 flex space-x-1 gap-2 md:gap-4">
                 {uniquePlatforms
                   .filter((platform) => platform.isPopular)
                   .map((platform, index) => (
-                    <HoverBox key={index} delay={100}>
-                      <HoverBoxTrigger className="text-xs text-gray-300 hover:text-white cursor-pointer">
-                        <img className="w-6 h-6 lg:w-8 md:h-8"
+                    <HoverBox key={index} delay={100} {...(mobileScreen === "sm" && isOpen.platform ? { open: true } : {})}>
+                      <HoverBoxTrigger className="text-xs text-gray-300 hover:text-white cursor-pointer" onClick={handlePlatformClick}>
+                        <img className="w-5 h-5 sm:w-8 sm:h-8"
                           src={getPlatformIcon(platform.provider_name)}
                           alt={platform.provider_name}
                         />
@@ -280,8 +356,11 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                   ))}
                 <div className="text-xs text-gray-300 hover:text-white cursor-pointer flex items-center">
                   {uniquePlatforms.some((platform) => !platform.isPopular) && (
-                    <HoverBox delay={100}>
-                      <HoverBoxTrigger className="flex items-center space-x-2">
+                    <HoverBox
+                      delay={100}
+                      {...(mobileScreen === "sm" && isOpen.otherPlatforms ? { open: true } : {})}
+                    >
+                      <HoverBoxTrigger className="flex items-center space-x-2" onclick={handleOtherPlatformsClick} >
                         <FontAwesomeIcon icon={faEllipsisH} className="w-6 h-6" />
                       </HoverBoxTrigger>
                       <HoverBoxContent side="right" align="start" sideOffset={5}>

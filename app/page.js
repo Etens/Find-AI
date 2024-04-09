@@ -22,7 +22,7 @@ export default function Home() {
           <p className="mt-4 font-normal text-xs text-neutral-300 max-w-lg text-center mx-auto">Vous manquez d&apos;idées ? Laissez-vous guider par les options de recherche ci-dessous.</p>
           <SearchBar setAssistantContent={setAssistantContent} assistantContent={assistantContent} setMovieDetailsMDb={setMovieDetailsMDb} movieDetailsMDb={movieDetailsMDb} />
         </div>
-        <div className="grid grid-cols-1 gap-14 mt-11 w-full h-full z-40 p-4 sm:p-6 md:p-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 gap-14 mt-11 w-full h-full z-40 p-4 sm:p-6 md:p-8 mx-auto">
           {movieDetailsMDb
             .slice()
             .reverse()
