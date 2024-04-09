@@ -23,7 +23,7 @@ const getEmotionIcon = (emotion) => {
   return emotionIcons[emotion] || faSmile;
 };
 
-const RatingStars = (note, explication, dominantColor, isColorLoaded) => {
+const getRatingStars = (note, explication, dominantColor, isColorLoaded) => {
   const [hovered, setHovered] = useState(false);
   let stars = [];
   let rating;
@@ -116,7 +116,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
-    setMainDivClassNames(`relative overflow-hidden rounded-lg w-full shadow-lg bg-black h-[17rem] lg:h-[24rem] ${id}`);
+    setMainDivClassNames(`relative overflow-hidden rounded-lg w-full shadow-lg bg-black lg:h-[24rem] sm:h-[15rem] h-[9rem] ${id}`);
   };
 
   useEffect(() => {
@@ -220,10 +220,11 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
         ${isFlipped ? "flipped" : ""}`}
         onClick={handleFlip}
       >
-        <div className="perspective m-auto">
+        <div className="perspective m-auto"
+          style={isColorLoaded ? { hoverShadow: `0 0px 20px -10px ${dominantColor}`, color: "white" } : { hoverShadow: "none", color: "white" }}>
           <div className="flex relative p-4 rounded-lg">
             <div className="flex flex-col items-center justify-center mb-6">
-              <img className="w-24 h-36 rounded shadow-lg sm:w-20 sm:h-32" src={posterURL} alt={title} />
+              <img className="w-24 h-32 rounded shadow-lg sm:h-36" src={posterURL} alt={title} />
               <HoverBox delay={100} openOnHover className="mt-2">
                 <HoverBoxTrigger className="text-sm text-gray-300 hover:text-white cursor-pointer">
                   <FontAwesomeIcon icon={getEmotionIcon(emotion)} size="xs" className="mt-2 w-4 h-4" />
@@ -234,20 +235,20 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                   </div>
                 </HoverBoxContent>
               </HoverBox>
-              <div className="text-gray-300 text-xs flex space-x-1 mt-2 sm:mt-1">
-                {RatingStars(note, explication, dominantColor, isColorLoaded)}
+              <div className="text-gray-300 text-xs flex space-x-1 lg:mt-1">
+                {getRatingStars(note, explication, dominantColor, isColorLoaded)}
               </div>
             </div>
-            <div className="ml-4 text-gray-300 z-10">
-              <h1 className="text-xl text-white font-bold">{title}</h1>
-              <h4 className="text-sm sm:text-xs mt-2">
+            <div className="ml-4 text-white z-10 mt-2">
+              <h1 className="text-xl sm:text-lg font-bold">{title}</h1>
+              <h4 className="mt-2 text-xs sm:text-[13px] lg:text-sm text-gray-300">
                 {date} - {duration} - {origin}
               </h4>
-              <p className="text-xs md:text-sm leading-relaxed mt-4 max-w-lg md:max-w-sm">{description}</p>
-              <div className="mt-4">
+              <p className="text-gray-300 leading-relaxed sm:mt-4 mt-2 max-w-sm lg:max-w-lg text-[8px] sm:text-[10px] lg:text-xs">{description}</p>
+              <div className="mt-1 md:flex md:space-x-4 sm:mt-4 ">
                 {actorImages.map((actor, index) => (
                   <HoverBox key={index} delay={100}>
-                    <HoverBoxTrigger className="text-xs text-gray-300 hover:text-white cursor-pointer mr-1"> {actor.name} </HoverBoxTrigger>
+                    <HoverBoxTrigger className="text-gray-300 hover:text-white cursor-pointer mr-1 text-[8px] sm:text-[10px] lg:text-xs"> {actor.name} </HoverBoxTrigger>
                     <HoverBoxContent side="bottom" align="start" sideOffset={-4}>
                       <img className="rounded object-cover shadow-lg h-auto w-14" src={actor.imageUrl} alt={actor.name} style={isColorLoaded ? { filter: `drop-shadow(0 0 10px ${dominantColor})` } : {}} />
                     </HoverBoxContent>
@@ -303,15 +304,15 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                 </div>
               </div>
             </div>
-            <div className={`absolute top-0 right-0 bottom-0 overflow-hidden bg-cover w-2/4 z-0 rounded-r-lg`} style={{ backgroundImage: `url(${backgroundImageUrl})` }}>
-            <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent z-0 rounded-r-lg w-full h-full backdrop-filter backdrop-blur-sm"></div>
+            <div className={`absolute top-0 right-0 bottom-0 overflow-hidden bg-cover w-3/4 z-0 rounded-lg`} style={{ backgroundImage: `url(${backgroundImageUrl})` }}>
+              <div className="absolute inset-0 bg-gradient-to-r to-transparent mix-blend-multiply from-black backdrop-filter backdrop-blur-sm"></div>
             </div>
           </div>
         </div>
-        <div className={`flip-card-back absolute inset-0 bg-black z-10`}>
+        <div className={`flip-card-back absolute inset-0 bg-black`}>
           {isFlipped && (
             <>
-              <div className="absolute inset-0 flex items-center justify-center z-5">
+              <div className="absolute inset-0 flex items-center justify-center">
                 {iframeLoaded ? null : (
                   <div className="flex justify-center items-center h-screen">
                     <div
@@ -329,9 +330,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                   </div>
                 )}
               </div>
-              <div className="absolute inset-0 z-20 flex items-center justify-center h-full"
-                onClick={handleFlip}>
-              </div>
+              <div className="z-20 absolute inset-0 flex items-center justify-center" onClick={handleFlip}></div>
               <iframe ref={iframeRef} className={`custom-ratio ${iframeLoaded ? "block" : "hidden"} z-10`} src={`${movieTrailers}?rel=0&showinfo=0&modestbranding=1`} allow="autoplay; encrypted-media" allowFullScreen title="Movie Trailer" sandbox="allow-same-origin allow-scripts allow-popups allow-forms" onLoad={handleIframeLoad}></iframe>
             </>
           )}
