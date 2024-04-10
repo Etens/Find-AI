@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlassPlus, faCircleXmark, faCircleArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { Textarea } from "../../components/ui/textarea";
 import { Progress } from "../../components/ui/progress";
-import { Button } from "../../components/ui/button";
 import SearchOptionsList from "./search-options-list";
 
 
@@ -20,6 +19,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [fetchOver, setFetchOver] = useState(false);
   const [country, setCountry] = useState("US");
+  const [isStreamingInfoLoaded, setIsStreamingInfoLoaded] = useState(false);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -89,7 +89,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
 
   useEffect(() => {
     let intervalId;
-    if (isLoading) {
+    if (isLoading && progressValue < 90) {
       setProgressValue(1);
       intervalId = setInterval(() => {
         setProgressValue((oldValue) => {
@@ -109,7 +109,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
       setTimeout(() => setProgressValue(0), 1000);
     }
     return () => clearInterval(intervalId);
-  }, [isLoading]);
+  }, [isLoading && !isStreamingInfoLoaded]);
 
   useEffect(() => {
     const fetchCountry = async () => {
@@ -173,9 +173,11 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
                 .map((actor) => actor.name)
                 .join(", ");
               const id = movieDetailsResponse.data.id;
+              const timeGenerated = new Date().toISOString();
               console.log("Movie Streamings:", movieStreamings);
               console.log("Movie Streamings for country:", movieStreamingsForCountry);
               console.log("Country:", country);
+              console.log("Date Generated:", timeGenerated);
 
               const newMovieDetails = {
                 id,
@@ -194,12 +196,15 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
                 language: message["Langue du prompt"],
                 origin: message["Origine"],
                 movieStreamingsForCountry,
+                time: timeGenerated
               };
 
-              setMovieDetailsMDb((prevMovies) => [...prevMovies.filter((movie) => movie.id !== id), newMovieDetails]);
+              setMovieDetailsMDb((prevMovies) => [newMovieDetails, ...prevMovies.filter((movie) => movie.id !== id)]);
               setFetchOver(true);
+              setIsStreamingInfoLoaded(true); 
               setTimeout(() => {
                 setFetchOver(false);
+                setIsStreamingInfoLoaded(false); 
               }, 4000);
             }
           } else {
@@ -210,7 +215,7 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
         }
       });
     }
-  }, [isLoading, country]);
+  }, [isLoading, messages]);
 
 
   return (
