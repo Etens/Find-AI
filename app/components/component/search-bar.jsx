@@ -228,7 +228,6 @@ export default function SearchBar({ setAssistantContent, setMovieDetailsMDb }) {
                   handleInputHeight(e);
                 }}
                 onKeyDown={handleKeyDown}
-                autoFocus
                 rows={1}
                 style={{ boxShadow: "0 0px 30px -15px white" }}
               />

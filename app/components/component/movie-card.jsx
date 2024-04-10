@@ -5,7 +5,7 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as fasStar, faSmile, faFaceGrinTears, faFaceSadTear, faFaceFlushed, faPeoplePulling, faFaceGrinHearts, faBrain, faHeartPulse, faGrinStars, faFire } from "@fortawesome/free-solid-svg-icons";
 import { faStar as farStar } from "@fortawesome/free-regular-svg-icons";
-import { faEllipsisH, faTurnUp } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
 import { HoverBox, HoverBoxContent, HoverBoxTrigger } from "../ui/hover-box";
 
 const MovieCard = ({ id, title, date, duration, emotion, description, posterURL, explication, note, backdropURL, movieTrailers, actorImages, origin, movieStreamingsForCountry }) => {
@@ -17,14 +17,7 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
   const [hoverShadow, setHoverShadow] = useState("0 0 30px -15px white");
   const [mainDivClassNames, setMainDivClassNames] = useState(`relative rounded-lg w-xs h-xs shadow-lg bg-black md:h-[24rem] sm:h-[15rem] h-[9rem] ${id}`);
   const [zIndex, setZIndex] = useState(1);
-  const [mobileScreen, setMobileScreen] = useState("sm");
-  const [isOpen, setIsOpen] = useState({
-    emotion: false,
-    rating: false,
-    actor: {},
-    platform: {},
-    otherPlatforms: false
-  });
+  const iframeRef = useRef(null);
 
   const getRatingValue = (note) => {
     return {
@@ -50,71 +43,6 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
     };
     return emotionIcons[emotion] || faSmile;
   };
-
-  const iframeRef = useRef(null);
-
-  const handleEmotionClick = () => {
-    setIsOpen({ ...isOpen, emotion: !isOpen.emotion });
-  };
-
-  const handlePlatformClick = (platformId) => {
-    setIsOpen(prevState => ({
-      ...prevState,
-      platform: {
-        ...prevState.platform,
-        [platformId]: !prevState.platform[platformId]
-      }
-    }));
-  };
-
-  const handleOtherPlatformsClick = () => {
-    setIsOpen({ ...isOpen, otherPlatforms: !isOpen.otherPlatforms });
-  };
-
-  const handleActorClick = (actorIndex) => {
-    setIsOpen({
-      ...isOpen,
-      actor: { ...isOpen.actor, [actorIndex]: !isOpen.actor[actorIndex] }
-    });
-  };
-
-  const handleRatingClick = () => {
-    setIsOpen(prevState => ({
-      ...prevState,
-      rating: !prevState.rating
-    }));
-  };
-
-
-  useEffect(() => {
-    const matchMedia = window.matchMedia('(min-width: 1024px)');
-
-    const handleScreenChange = (e) => {
-      setMobileScreen(e.matches ? "lg" : "sm");
-    };
-
-    matchMedia.addEventListener('change', handleScreenChange);
-    handleScreenChange(matchMedia);
-
-    return () => matchMedia.removeEventListener('change', handleScreenChange);
-  }, [])
-
-  const handleCardClick = () => {
-    if (mobileScreen === "lg") {
-      setIsFlipped(!isFlipped);
-    }
-  };
-
-  const FlipButton = ({ onClick }) => (
-    <button
-      className={`absolute bottom-4 right-4 z-20 bg-opacity-50 rounded-md lg:hidden focus:outline-none`}
-      onClick={onClick}
-      aria-label="Retourner la carte"
-    >
-      <FontAwesomeIcon icon={faTurnUp} className="text-white w-4 h-4" />
-    </button>
-  );
-
 
   useEffect(() => {
     if (backdropURL) {
@@ -153,7 +81,6 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped);
-    setMainDivClassNames(`relative overflow-hidden rounded-lg w-full shadow-lg bg-black lg:h-[24rem] sm:h-[15rem] h-[9rem] ${id}`);
   };
 
   useEffect(() => {
@@ -166,15 +93,6 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
       setMainDivClassNames(`relative rounded-lg w-full shadow-lg bg-black ${id}`);
     }
   }, [isFlipped]);
-
-  useEffect(() => {
-    if (isFlipped && !trailerPlayed) {
-      iframeRef.current.src += "&autoplay=1";
-      setTrailerPlayed(true);
-    } else if (!isFlipped && trailerPlayed) {
-      setTrailerPlayed(false);
-    }
-  }, [isFlipped, trailerPlayed]);
 
   const handleIframeLoad = () => {
     setTimeout(() => {
@@ -252,10 +170,9 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
   return (
     <div className={`${mainDivClassNames} transition-height duration-500 ease-in-out`}
       style={cardStyle} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-      <FlipButton onClick={handleFlip} />
       <div
         className={`flip-card-inner relative h-full ${isFlipped ? "flipped" : ""}`}
-        onClick={handleCardClick}
+        onClick={handleFlip}
       >
         <div className="perspective m-auto"
           style={isColorLoaded ? { hoverShadow: `0 0px 20px -10px ${dominantColor}`, color: "white" } : { hoverShadow: "none", color: "white" }}>
@@ -265,10 +182,9 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
               <HoverBox
                 delay={100}
                 className="mt-2"
-                {...(mobileScreen === "sm" && isOpen.emotion ? { open: true } : {})}
               >
-                <HoverBoxTrigger className="text-sm text-gray-300 hover:text-white cursor-pointer" onClick={handleEmotionClick}>
-                  <FontAwesomeIcon icon={getEmotionIcon(emotion)} size="xs" className="mt-2 w-3 h-3 md:w-4 md:h-5 text-gray-300" />
+                <HoverBoxTrigger className="text-sm text-gray-300 hover:text-white cursor-pointer">
+                  <FontAwesomeIcon icon={getEmotionIcon(emotion)} size="xs" className="mt-2 w-3 h-3 md:w-4 md:h-5 text-gray-300 hover:text-white cursor-pointer" />
                 </HoverBoxTrigger>
                 <HoverBoxContent side="left" align="left" className="w-32">
                   <div className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-4" style={isColorLoaded ? { filter: `drop-shadow(0 0 10px ${dominantColor})` } : {}}>
@@ -276,27 +192,27 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                   </div>
                 </HoverBoxContent>
               </HoverBox>
-              <div className="text-gray-300 text-xs flex space-x-2 lg:mt-1 mt-1">
-                <HoverBox delay={100} {...(mobileScreen === "sm" && isOpen.rating ? { open: true } : {})}>
-                  <div style={{ display: 'flex' }} onClick={handleRatingClick}>
+              <div className="text-gray-300 text-xs flex space-x-2 lg:mt-1 mt-1 hover:text-white cursor-pointer">
+                <HoverBox delay={100}>
+                  <div className="flex space-x-1">
                     {[...Array(5)].map((_, i) => {
                       const ratingValue = i + 1;
                       return (
-                        <HoverBoxTrigger key={i} style={{ cursor: "pointer" }} className="mr-1" >
+                        <HoverBoxTrigger key={i} className="mr-1 text-gray-300 hover:text-white cursor-pointer">
                           <FontAwesomeIcon icon={ratingValue <= getRatingValue(note) ? fasStar : farStar} size="xs" />
                         </HoverBoxTrigger>
+
                       );
                     })}
                   </div>
-                  {isOpen.rating && (
-                    <HoverBoxContent side="left" align="left">
-                      <div className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-6" style={isColorLoaded ? { filter: `drop-shadow(0 0 30px ${dominantColor})` } : {}}>
-                        {explication}
-                      </div>
-                    </HoverBoxContent>
-                  )}
+                  <HoverBoxContent side="left" align="left">
+                    <div className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-6" style={isColorLoaded ? { filter: `drop-shadow(0 0 30px ${dominantColor})` } : {}}>
+                      {explication}
+                    </div>
+                  </HoverBoxContent>
                 </HoverBox>
-              </div>            </div>
+              </div>
+            </div>
             <div className="ml-4 text-white z-10 mt-2 md:mt-1">
               <h1 className="text-xl sm:text-2xl font-bold">{title}</h1>
               <h4 className="mt-2 text-xs sm:text-[13px] lg:text-sm text-gray-300">
@@ -308,8 +224,8 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                   <HoverBox
                     key={index}
                     delay={100}
-                    {...(mobileScreen === "sm" && isOpen.actor[index] ? { open: true } : {})} >
-                    <HoverBoxTrigger onClick={() => handleActorClick(index)} className="text-gray-300 hover:text-white cursor-pointer mr-1 text-[8px] sm:text-[10px] lg:text-xs"> {actor.name} </HoverBoxTrigger>
+                  >
+                    <HoverBoxTrigger className="text-gray-300 hover:text-white cursor-pointer mr-1 text-[8px] sm:text-[10px] lg:text-xs"> {actor.name} </HoverBoxTrigger>
                     <HoverBoxContent side="bottom" align="start" sideOffset={-4}>
                       <img className="rounded object-cover shadow-lg h-auto w-14" src={actor.imageUrl} alt={actor.name} style={isColorLoaded ? { filter: `drop-shadow(0 0 10px ${dominantColor})` } : {}} />
                     </HoverBoxContent>
@@ -323,9 +239,8 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                     <HoverBox
                       key={index}
                       delay={100}
-                      {...(mobileScreen === "sm" && isOpen.platform[platform.provider_id] ? { open: true } : {})}
                     >
-                      <HoverBoxTrigger className="text-xs text-gray-300 hover:text-white cursor-pointer" onClick={() => handlePlatformClick(platform.provider_id)}>
+                      <HoverBoxTrigger className="text-xs text-gray-300 hover:text-white cursor-pointer" >
                         <img className="w-5 h-5 sm:w-8 sm:h-8"
                           src={getPlatformIcon(platform.provider_name)}
                           alt={platform.provider_name}
@@ -347,19 +262,18 @@ const MovieCard = ({ id, title, date, duration, emotion, description, posterURL,
                   {uniquePlatforms.some((platform) => !platform.isPopular) && (
                     <HoverBox
                       delay={100}
-                      {...(mobileScreen === "sm" && isOpen.otherPlatforms ? { open: true } : {})}
                     >
-                      <HoverBoxTrigger className="flex items-center space-x-2" onClick={handleOtherPlatformsClick} >
+                      <HoverBoxTrigger className="flex items-center space-x-2">
                         <FontAwesomeIcon icon={faEllipsisH} className="w-6 h-6" />
                       </HoverBoxTrigger>
                       <HoverBoxContent side="right" align="start" sideOffset={5}>
-                        <div className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-4" style={isColorLoaded ? { filter: `drop-shadow(0 0 10px ${dominantColor})` } : {}}>
+                        <div className="text-xs text-gray-200 rounded-lg bg-black bg-opacity-90 p-6" style={isColorLoaded ? { filter: `drop-shadow(0 0 10px ${dominantColor})` } : {}}>
                           {uniquePlatforms
                             .filter((platform) => !platform.isPopular)
                             .map((platform, index) => (
-                              <div key={index} className="flex items-center space-x-2 p-1">
-                                <img className="flex w-8 h-8 items-start rounded-lg" src={getPlatformIcon(platform.provider_name, platform.logo_path)} alt={platform.provider_name} />
-                                <div className="flex flex-col mb-1">
+                              <div key={index} className="flex items-center space-x-3 mb-5">
+                                <img className="w-6 h-6 rounded-lg" src={getPlatformIcon(platform.provider_name, platform.logo_path)} alt={platform.provider_name} />
+                                <div className="flex flex-col text-left text-xs">
                                   <span className="text-sm text-white">{platform.provider_name}</span>
                                   <span className="text-xs text-gray-300">{getCustomTypeMessage(platform.types)}</span>
                                 </div>
