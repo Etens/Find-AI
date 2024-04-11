@@ -51,11 +51,9 @@ export default function Home() {
             <SearchBar setAssistantContent={setAssistantContent} assistantContent={assistantContent} setMovieDetailsMDb={setMovieDetailsMDb} movieDetailsMDb={movieDetailsMDb} />
           </div>
           <div className="grid grid-cols-1 gap-14 mt-6 w-full h-full z-40 p-4 sm:p-6 md:p-8 mx-auto">
-            {movieDetailsMDb
-              .slice()
-              .map((movie, index) => (
-                <MovieCard key={movie.id || index} title={movie.title} description={movie.description} emotion={movie.emotion} note={movie.note} explication={movie.explication} posterURL={movie.posterURL} backdropURL={movie.backdropURL} duration={movie.duration} mainActors={movie.mainActors} actorImages={movie.actorImages} date={movie.releaseDate} movieTrailers={movie.movieTrailers} origin={movie.origin} movieStreamingsForCountry={movie.movieStreamingsForCountry} />
-              ))}
+            {movieDetailsMDb.slice().map((movie, index) => (
+              <MovieCard key={movie.id || index} title={movie.title} description={movie.description} emotion={movie.emotion} note={movie.note} explication={movie.explication} posterURL={movie.posterURL} backdropURL={movie.backdropURL} duration={movie.duration} mainActors={movie.mainActors} actorImages={movie.actorImages} date={movie.releaseDate} movieTrailers={movie.movieTrailers} origin={movie.origin} movieStreamingsForCountry={movie.movieStreamingsForCountry} />
+            ))}
           </div>
         </div>
       </main>
